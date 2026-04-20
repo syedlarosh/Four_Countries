@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>StoreMap Pro | Themed by Region Colors</title>
+
+  <!-- Leaflet CSS + JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Leaflet Marker Cluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  
+  <!-- Font Awesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: #f0f4f8; 
+      height: 100vh; 
+      overflow: hidden; 
+      color: #1a2c3e; 
+    }
+    
+    /* ========== THEME VARIABLES (Inspired by Region Colors) ========== */
+    :root {
+      --theme-primary: #1ABC9C;      /* Hauts-de-France / Pays de la Loire */
+      --theme-primary-dark: #138a72;
+      --theme-secondary: #3498DB;    /* Centre-Val de Loire */
+      --theme-accent: #E74C3C;       /* Auvergne-Rhône-Alpes */
+      --theme-warning: #F39C12;      /* Occitanie */
+      --theme-dark: #2C3E50;         /* Île-de-France */
+      --theme-light: #F9FBFD;
+      --border-radius-card: 24px;
+      --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
+      --transition: all 0.2s ease;
+    }
+    
+    .app-container { display: flex; height: 100%; width: 100%; }
+    
+    /* ========== SIDEBAR WITH THEME ========== */
+    .sidebar {
+      width: 440px; 
+      background: var(--theme-light); 
+      backdrop-filter: blur(2px);
+      border-right: 1px solid rgba(0, 0, 0, 0.06); 
+      display: flex; 
+      flex-direction: column;
+      box-shadow: 12px 0 32px -12px rgba(0, 0, 0, 0.1); 
+      z-index: 15;
+      height: 100vh; 
+      overflow-y: auto;
+    }
+    
+    .sidebar-header {
+      padding: 1.5rem 1.5rem 1rem; 
+      background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
+      color: white; 
+      position: sticky; 
+      top: 0; 
+      z-index: 20;
+    }
+    .sidebar-header h2 { 
+      font-size: 1.4rem; 
+      font-weight: 700; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+    }
+    .big-stats-card {
+      background: rgba(255, 255, 255, 0.15); 
+      border-radius: 20px;
+      padding: 0.8rem 1.2rem; 
+      margin-top: 1rem;
+      backdrop-filter: blur(4px);
+    }
+    .total-value { font-size: 2rem; font-weight: 800; }
+    
+    /* Country Buttons Themed */
+    .country-buttons { display: flex; gap: 10px; margin: 1rem 1.5rem 0.8rem; flex-wrap: wrap; }
+    .btn-country {
+      flex: 1; background: white; border: 1px solid #e2edf2; border-radius: 40px;
+      padding: 6px 0; font-weight: 600; font-size: 0.7rem; cursor: pointer; 
+      transition: var(--transition);
+    }
+    .btn-country:hover { background: var(--theme-primary); color: white; border-color: var(--theme-primary); }
+    
+    /* Action Buttons Themed */
+    .action-buttons { 
+      display: flex; 
+      gap: 12px; 
+      margin: 0.5rem 1.5rem 0.8rem;
+      flex-wrap: wrap;
+    }
+    .btn { 
+      flex: 1; 
+      padding: 8px 0; 
+      border-radius: 40px; 
+      font-size: 0.7rem; 
+      font-weight: 600; 
+      cursor: pointer; 
+      border: none; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 6px; 
+      transition: var(--transition);
+    }
+    .btn-primary { background: var(--theme-primary); color: white; }
+    .btn-primary:hover { background: var(--theme-primary-dark); transform: translateY(-1px); }
+    .btn-outline { background: white; border: 1px solid #cfdfe2; color: var(--theme-dark); }
+    .btn-outline:hover { border-color: var(--theme-primary); color: var(--theme-primary); }
+    .btn-reset { background: #f0f6fa; border: 1px solid #cfdfe2; color: var(--theme-primary-dark); }
+    .btn-reset:hover { background: #e6f0f5; }
+    .btn-toggle { background: var(--theme-warning); color: white; border: none; }
+    .btn-toggle.off { background: #95a5a6; }
+    
+    /* Dropdown / Search Area Themed */
+    .region-search-area { margin: 0.5rem 1.5rem; }
+    .custom-dropdown { position: relative; width: 100%; }
+    .dropdown-input {
+      width: 100%; padding: 10px 15px 10px 40px; border: 1.5px solid #e2edf2; border-radius: 40px;
+      font-size: 0.85rem; background: #ffffff; transition: var(--transition);
+    }
+    .dropdown-input:focus { outline: none; border-color: var(--theme-primary); box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2); }
+    .dropdown-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--theme-primary); font-size: 14px; }
+    .dropdown-arrow { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #8ea0b0; }
+    .dropdown-menu {
+      position: absolute; top: 55px; left: 0; width: 100%; background: #ffffff; border-radius: 20px;
+      box-shadow: var(--shadow-sm); max-height: 250px; overflow-y: auto; z-index: 200; display: none;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .dropdown-menu.show { display: block; }
+    .dropdown-option { 
+      padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; 
+      cursor: pointer; border-bottom: 1px solid #eff3f8; gap: 8px;
+      transition: var(--transition);
+    }
+    .dropdown-option:hover { background: rgba(26, 188, 156, 0.08); }
+    .dropdown-option.selected { background: rgba(26, 188, 156, 0.12); font-weight: 600; color: var(--theme-primary-dark); }
+    .option-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .option-logo { width: 24px; height: 24px; object-fit: contain; border-radius: 4px; }
+    .checkbox-multi { width: 16px; height: 16px; border: 2px solid #cbdbe0; border-radius: 4px; display: inline-block; }
+    .dropdown-option.selected .checkbox-multi { background: var(--theme-primary); border-color: var(--theme-primary); position: relative; }
+    .dropdown-option.selected .checkbox-multi::after { content: "✓"; color: white; font-size: 10px; display: flex; justify-content: center; line-height: 12px; }
+    .region-badge-count { background: #eef2f7; padding: 2px 8px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
+    
+    /* Selected Tags Container - Dynamic colors come from JS */
+    .selected-regions-container {
+      margin: 0.5rem 1.5rem; 
+      max-height: 100px; 
+      overflow-y: auto; 
+      display: flex; 
+      flex-wrap: wrap;
+      gap: 6px; 
+      padding: 8px 10px; 
+      background: #fafcfd; 
+      border-radius: 20px; 
+      min-height: 50px;
+      border: 1px dashed rgba(0,0,0,0.08);
+    }
+    .region-tag { 
+      color: white; 
+      padding: 4px 10px; 
+      border-radius: 30px; 
+      font-size: 0.7rem; 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 6px; 
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .region-tag:hover { opacity: 0.85; transform: scale(1.02); }
+    .region-tag i { font-size: 9px; }
+    
+    /* Map & Markers */
+    .map-wrapper { flex: 1; position: relative; height: 100vh; }
+    #map { height: 100%; width: 100%; }
+    .custom-marker-logo { background: white; border-radius: 50%; border: 2px solid; box-shadow: 0 1px 5px rgba(0,0,0,0.2); overflow: hidden; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .custom-marker-logo img { width: 26px; height: 26px; object-fit: contain; }
+    
+    .cluster-marker {
+      background: white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      border: 2px solid var(--theme-primary);
+      overflow: hidden;
+    }
+    .cluster-marker img { width: 30px; height: 30px; object-fit: contain; }
+    
+    .leaflet-popup-content { margin: 12px 16px; min-width: 260px; }
+    .popup-store-card { display: flex; gap: 14px; align-items: center; }
+    .popup-logo { width: 60px; height: 60px; background: #f4f6f9; border-radius: 16px; display: flex; align-items: center; justify-content: center; padding: 8px; }
+    .popup-info h4 { font-size: 0.95rem; font-weight: 800; color: var(--theme-primary-dark); margin-bottom: 6px; }
+    .popup-info i { width: 18px; color: var(--theme-primary); }
+    
+    .map-loading { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 12px; border-radius: 20px; z-index: 1000; font-size: 11px; display: none; }
+    
+    @media (max-width: 720px) { .sidebar { width: 320px; } }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2><i class="fas fa-store"></i> StoreMap Pro</h2>
+      <div class="big-stats-card">
+        <div class="total-value" id="totalStoresBig">0</div>
+        <div style="font-size:0.7rem; opacity:0.9;">Total Stores</div>
+      </div>
+    </div>
+    <div class="country-buttons">
+      <button class="btn-country" data-country="FR" data-lat="46.5" data-lng="2.5" data-zoom="6">🇫🇷 France</button>
+      <button class="btn-country" data-country="CH" data-lat="46.8" data-lng="8.2" data-zoom="8">🇨🇭 Switzerland</button>
+      <button class="btn-country" data-country="BE" data-lat="50.5" data-lng="4.5" data-zoom="8">🇧🇪 Belgium</button>
+      <button class="btn-country" data-country="LU" data-lat="49.8" data-lng="6.1" data-zoom="10">🇱🇺 Luxembourg</button>
+    </div>
+    
+    <div class="action-buttons">
+      <button id="selectAllBtn" class="btn btn-primary"><i class="fas fa-check-double"></i> Select All</button>
+      <button id="toggleStoresBtn" class="btn btn-toggle"><i class="fas fa-eye-slash"></i> Hide Stores</button>
+      <button id="resetViewBtn" class="btn btn-reset"><i class="fas fa-globe-europe"></i> Reset View</button>
+      <button id="clearRegionBtn" class="btn btn-outline"><i class="fas fa-times"></i> Clear All</button>
+    </div>
+    
+    <div class="region-search-area">
+      <div class="custom-dropdown" id="regionDropdownContainer">
+        <i class="fas fa-search dropdown-icon"></i>
+        <input type="text" id="regionSearchInput" class="dropdown-input" placeholder="Search & select regions..." autocomplete="off">
+        <i class="fas fa-chevron-down dropdown-arrow"></i>
+        <div id="dropdownMenu" class="dropdown-menu"></div>
+      </div>
+    </div>
+    <div class="selected-regions-container" id="selectedRegionsContainer">
+      <span style="color:#8ba0ae;font-size:0.7rem;">No region selected</span>
+    </div>
+  </div>
+  <div class="map-wrapper">
+    <div id="map"></div>
+    <div id="mapLoadingOverlay" class="map-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+  </div>
+</div>
+
+<script>
+  // ======================== HELPER: Google Drive to direct image URL ========================
+  function convertDriveLinkToDirectUrl(driveUrl) {
+    if (!driveUrl) return null;
+    if (driveUrl.includes('googleusercontent.com') || driveUrl.includes('.png') || driveUrl.includes('.jpg')) {
+      return driveUrl;
+    }
+    let fileId = null;
+    let match = driveUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (match) fileId = match[1];
+    if (!fileId) match = driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (match) fileId = match[1];
+    if (!fileId) match = driveUrl.match(/id=([a-zA-Z0-9_-]+)/);
+    if (match) fileId = match[1];
+    if (fileId) {
+      return `https://lh3.googleusercontent.com/d/${fileId}=w32-h32-p-k-no-nd`;
+    }
+    return driveUrl;
+  }
+
+  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxMAvv3bo7irTMVzvkXMVoS0dFjHvMGqnJJhQG3HIkPEONdevNdPbxFDiHMEF9bGl-VxEeqLdxFFj8/pub?output=csv";
+  let logoMap = new Map();
+  
+  function parseCSVLine(line) {
+    const result = [];
+    let inQuote = false;
+    let current = "";
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') inQuote = !inQuote;
+      else if (ch === ',' && !inQuote) { result.push(current); current = ""; }
+      else current += ch;
+    }
+    result.push(current);
+    return result.map(cell => cell.replace(/^"|"$/g, ''));
+  }
+  
+  async function loadLogoMapping() {
+    try {
+      console.log("📥 Fetching logos...");
+      const response = await fetch(sheetUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const csvText = await response.text();
+      const lines = csvText.split(/\r?\n/);
+      if (lines.length < 2) throw new Error("No data");
+      
+      const headers = parseCSVLine(lines[0]);
+      const logoColIndex = headers.findIndex(h => h.toUpperCase().includes('LOGO'));
+      const regionColIndex = headers.findIndex(h => h.toUpperCase().includes('REGION'));
+      
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim() === "") continue;
+        const cells = parseCSVLine(lines[i]);
+        if (cells.length < 2) continue;
+        
+        let logoUrl = cells[logoColIndex >= 0 ? logoColIndex : 0];
+        let regionName = cells[regionColIndex >= 0 ? regionColIndex : 1];
+        
+        regionName = regionName.trim().toUpperCase();
+        logoUrl = logoUrl.trim();
+        
+        if (!regionName || !logoUrl || regionName === "" || logoUrl === "") continue;
+        if (logoUrl === "LOGO_URL" || regionName === "CLI_REGION") continue;
+        
+        const directUrl = convertDriveLinkToDirectUrl(logoUrl);
+        logoMap.set(regionName, directUrl || logoUrl);
+      }
+      console.log(`✅ Loaded ${logoMap.size} logos`);
+      return true;
+    } catch (error) {
+      console.error("❌ Error:", error);
+      return false;
+    }
+  }
+  
+  function getLogoUrlForRegion(regionName) {
+    if (!regionName) return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    const key = regionName.trim().toUpperCase();
+    if (logoMap.has(key)) return logoMap.get(key);
+    const firstWord = key.split(' ')[0];
+    if (firstWord && logoMap.has(firstWord)) return logoMap.get(firstWord);
+    for (let [storedKey, url] of logoMap.entries()) {
+      if (key.includes(storedKey) || storedKey.includes(key)) return url;
+    }
+    return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+  }
+  
+  // ======================== NAME_1 BASED COLOR CODING ========================
+  // 20 unique regions - each gets a distinct color (same as polygon colors) AND UI uses these
+  function getRegionColor(regionName) {
+    if (!regionName) return "#A8D8EA";
+    
+    const colorMap = {
+      "Auvergne-Rhône-Alpes": "#E74C3C",
+      "Bourgogne-Franche-Comté": "#E67E22",
+      "Bretagne": "#F1C40F",
+      "Bruxelles": "#2ECC71",
+      "Centre-Val de Loire": "#3498DB",
+      "Corse": "#9B59B6",
+      "Diekirch": "#8B4513",
+      "Grand Est": "#FF69B4",
+      "Grevenmacher": "#FF7F50",
+      "Hauts-de-France": "#1ABC9C",
+      "Île-de-France": "#2C3E50",
+      "Luxembourg": "#E8DAEF",
+      "Normandie": "#D35400",
+      "Nouvelle-Aquitaine": "#C0392B",
+      "Occitanie": "#F39C12",
+      "Pays de la Loire": "#1ABC9C",
+      "Provence-Alpes-Côte d'Azur": "#87CEEB",
+      "Switzerland": "#7F8C8D",
+      "Vlaanderen": "#E67E22",
+      "Wallonie": "#27AE60"
+    };
+    
+    return colorMap[regionName] || "#A8D8EA";
+  }
+  
+  // Style function for GeoJSON polygons using NAME_1 property
+  function styleRegion(feature) {
+    let regionName = feature.properties?.NAME_1 || "";
+    const fillColor = getRegionColor(regionName);
+    return {
+      fillColor: fillColor,
+      weight: 1.2,
+      opacity: 0.8,
+      color: "#ffffff",
+      fillOpacity: 10,
+      dashArray: null
+    };
+  }
+  
+  // Highlight effect on hover
+  function highlightFeature(e) {
+    const layer = e.target;
+    if (!layer.feature) return;
+    layer.setStyle({
+      weight: 2.5,
+      color: "#333",
+      fillOpacity: 0.85,
+      dashArray: ""
+    });
+    if (!L.Browser.ie && !L.Browser.opera) {
+      layer.bringToFront();
+    }
+    const regionName = layer.feature.properties?.NAME_1 || "Unknown Region";
+    layer.bindTooltip(regionName, { sticky: true, className: "region-tooltip" }).openTooltip();
+  }
+  
+  function resetHighlight(e) {
+    const layer = e.target;
+    layer.setStyle(styleRegion(layer.feature));
+    layer.closeTooltip();
+  }
+  
+  function onRegionClick(e) {
+    const props = e.target.feature.properties;
+    const regionName = props?.NAME_1 || "Region";
+    console.log("Clicked on region:", regionName);
+    if (e.target.getBounds) {
+      map.fitBounds(e.target.getBounds(), { padding: [30, 30] });
+    }
+  }
+  
+  // ======================== STORE MARKERS & CLUSTER LOGIC ========================
+  const map = L.map('map').setView([46.8, 3.5], 6);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+  
+  let currentClusterGroup = null;
+  let allStoresFeatures = [];
+  let regionMapData = new Map();
+  let selectedRegions = new Set();
+  let isUpdating = false;
+  let geoJsonLayer = null;
+  let storesVisible = true;
+  
+  const DEFAULT_VIEW = { lat: 46.8, lng: 3.5, zoom: 6 };
+  
+  function resetToDefaultView() {
+    map.setView([DEFAULT_VIEW.lat, DEFAULT_VIEW.lng], DEFAULT_VIEW.zoom);
+  }
+  
+  function showLoading() { document.getElementById('mapLoadingOverlay').style.display = 'block'; }
+  function hideLoading() { document.getElementById('mapLoadingOverlay').style.display = 'none'; }
+  
+  function getMarkerColor(countryCode) {
+    const colors = { 'FR': '#d9534f', 'CH': '#3b82f6', 'BE': '#20b2aa', 'LU': '#aa6dc9' };
+    return colors[countryCode] || '#6c757d';
+  }
+  
+  function zoomToSelectedRegions() {
+    if (selectedRegions.size === 0) {
+      resetToDefaultView();
+      return;
+    }
+    const points = [];
+    selectedRegions.forEach(region => {
+      const regionData = regionMapData.get(region);
+      if (regionData && regionData.features) {
+        regionData.features.forEach(feature => {
+          const coords = feature.geometry?.coordinates;
+          if (coords && coords.length >= 2) {
+            points.push([coords[1], coords[0]]);
+          }
+        });
+      }
+    });
+    if (points.length > 0) {
+      const bounds = L.latLngBounds(points);
+      map.fitBounds(bounds, { padding: [50, 50] });
+    } else {
+      resetToDefaultView();
+    }
+  }
+  
+  function getClusterLogo(cluster) {
+    const markers = cluster.getAllChildMarkers();
+    if (!markers.length) return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    const logoCount = new Map();
+    markers.forEach(marker => {
+      const markerElement = marker.options.icon?.options?.html;
+      let logo = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+      if (markerElement) {
+        const match = markerElement.match(/src="([^"]+)"/);
+        if (match) logo = match[1];
+      }
+      logoCount.set(logo, (logoCount.get(logo) || 0) + 1);
+    });
+    let maxCount = 0;
+    let mostCommonLogo = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    for (let [logo, count] of logoCount) {
+      if (count > maxCount) {
+        maxCount = count;
+        mostCommonLogo = logo;
+      }
+    }
+    return mostCommonLogo;
+  }
+  
+  function createClusterMarker(cluster) {
+    const clusterLogo = getClusterLogo(cluster);
+    return L.divIcon({
+      html: `<div class="cluster-marker"><img src="${clusterLogo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>`,
+      className: 'cluster-div-marker',
+      iconSize: [40, 40]
+    });
+  }
+  
+  function createLogoMarker(feature, latlng) {
+  const props = feature.properties;
+  const region = props.CLI_REGION || 'Store';
+  const logoUrl = getLogoUrlForRegion(region);
+  const countryCode = props.CLI_CODE_P || 'FR';
+  const borderColor = getMarkerColor(countryCode);
+  
+  // Add this helper function INSIDE createLogoMarker or outside
+  function getCountryFullName(code) {
+    const countryMap = {
+      'BE': 'Belgium',
+      'CH': 'Switzerland', 
+      'FR': 'France',
+      'LU': 'Luxembourg'
+    };
+    return countryMap[code] || code || '—';
+  }
+  
+  const markerHtml = `<div class="custom-marker-logo" style="border-color: ${borderColor};"><img src="${logoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>`;
+  const icon = L.divIcon({ html: markerHtml, className: 'custom-div-marker', iconSize: [32, 32], popupAnchor: [0, -16] });
+  const marker = L.marker(latlng, { icon: icon });
+  
+  const popupLogoUrl = getLogoUrlForRegion(region);
+  const popupHtml = `
+    <div class="popup-store-card">
+      <div class="popup-logo"><img src="${popupLogoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>
+      <div class="popup-info">
+        <h4><i class="fas fa-store"></i> ${props.CLI_RAISON || 'Store'}</h4>
+        <p><i class="fas fa-building"></i> <strong>Department:</strong> ${props.CLI_DEP_FR || '—'}</p>
+        <p><i class="fas fa-map-pin"></i> <strong>Region:</strong> ${region}</p>
+        <p><i class="fas fa-city"></i> <strong>City:</strong> ${props.CLI_VILLE || '—'}</p>
+        <p><i class="fas fa-flag"></i> <strong>Country:</strong> ${getCountryFullName(props.CLI_CODE_P)}</p>
+        <p><i class="fas fa-location-dot"></i> <strong>Address:</strong> ${props.Address || props.CLI_ADRESSE || '—'}</p>
+      </div>
+    </div>
+  `;
+  
+  marker.bindPopup(popupHtml, { maxWidth: 320, minWidth: 260 });
+  return marker;
+}
+  
+  function buildRegionIndex(features) {
+    regionMapData.clear();
+    features.forEach(feature => {
+      let region = feature.properties?.CLI_REGION?.trim();
+      if (!region || region === "") region = "Unspecified Region";
+      if (!regionMapData.has(region)) {
+        regionMapData.set(region, { count: 0, features: [], bounds: [] });
+      }
+      const entry = regionMapData.get(region);
+      entry.count += 1;
+      entry.features.push(feature);
+      const coords = feature.geometry?.coordinates;
+      if (coords && coords.length >= 2) entry.bounds.push([coords[1], coords[0]]);
+    });
+  }
+  
+  function updateMapMarkers() {
+    if (isUpdating) return;
+    isUpdating = true;
+    showLoading();
+    setTimeout(() => {
+      try {
+        if (currentClusterGroup) map.removeLayer(currentClusterGroup);
+        
+        if (storesVisible) {
+          currentClusterGroup = L.markerClusterGroup({
+            maxClusterRadius: 20,
+            iconCreateFunction: createClusterMarker,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true
+          });
+          
+          let featuresToShow;
+          if (selectedRegions.size === 0) {
+            featuresToShow = allStoresFeatures;
+          } else {
+            featuresToShow = [];
+            selectedRegions.forEach(region => {
+              const regionData = regionMapData.get(region);
+              if (regionData && regionData.features) featuresToShow.push(...regionData.features);
+            });
+          }
+          
+          console.log("Showing features:", featuresToShow.length);
+          featuresToShow.forEach(feature => {
+            const coords = feature.geometry?.coordinates;
+            if (coords && coords.length >= 2) {
+              currentClusterGroup.addLayer(createLogoMarker(feature, [coords[1], coords[0]]));
+            }
+          });
+          map.addLayer(currentClusterGroup);
+        } else {
+          currentClusterGroup = null;
+        }
+        hideLoading();
+      } catch(e) { console.warn(e); hideLoading(); } finally { isUpdating = false; }
+    }, 50);
+  }
+  
+  function toggleStores() {
+    storesVisible = !storesVisible;
+    const toggleBtn = document.getElementById('toggleStoresBtn');
+    if (storesVisible) {
+      toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Stores';
+      toggleBtn.classList.remove('off');
+    } else {
+      toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Stores';
+      toggleBtn.classList.add('off');
+    }
+    updateMapMarkers();
+  }
+  
+  function updateStatsDisplay() {
+    const totalElem = document.getElementById('totalStoresBig');
+    if (selectedRegions.size === 0) {
+      totalElem.innerText = allStoresFeatures.length;
+    } else {
+      let totalSelected = 0;
+      selectedRegions.forEach(r => totalSelected += regionMapData.get(r)?.count || 0);
+      totalElem.innerText = `${totalSelected} / ${allStoresFeatures.length}`;
+    }
+  }
+  
+  function renderDropdown(searchVal = "") {
+    const menu = document.getElementById('dropdownMenu');
+    if (!menu) return;
+    const term = searchVal.toLowerCase().trim();
+    let regions = Array.from(regionMapData.keys()).filter(r => r !== "Unspecified Region");
+    if (term) regions = regions.filter(r => r.toLowerCase().includes(term));
+    regions.sort();
+    if (!regions.length) { menu.innerHTML = `<div style="padding:12px;text-align:center;">No regions found</div>`; return; }
+    menu.innerHTML = regions.map(region => {
+      const count = regionMapData.get(region).count;
+      const isSelected = selectedRegions.has(region);
+      const logoUrl = getLogoUrlForRegion(region);
+      return `<div class="dropdown-option ${isSelected ? 'selected' : ''}" data-region="${region.replace(/"/g, '&quot;')}">
+        <div class="option-left">
+          <div class="checkbox-multi"></div>
+          <img src="${logoUrl}" class="option-logo" onerror="this.style.display='none'">
+          <span>${region}</span>
+        </div>
+        <span class="region-badge-count">${count}</span>
+      </div>`;
+    }).join('');
+    document.querySelectorAll('.dropdown-option').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const regionName = opt.getAttribute('data-region');
+        if (regionName) {
+          if (selectedRegions.has(regionName)) selectedRegions.delete(regionName);
+          else selectedRegions.add(regionName);
+          updateSelectedRegionsTags();
+          updateMapMarkers();
+          renderDropdown(document.getElementById('regionSearchInput').value);
+          updateStatsDisplay();
+          zoomToSelectedRegions();
+        }
+      });
+    });
+  }
+  
+  function updateSelectedRegionsTags() {
+    const container = document.getElementById('selectedRegionsContainer');
+    if (!container) return;
+    if (selectedRegions.size === 0) { 
+      container.innerHTML = '<span style="color:#8ba0ae;font-size:0.7rem;">No region selected</span>'; 
+      return; 
+    }
+    container.innerHTML = Array.from(selectedRegions).map(region => {
+      const cnt = regionMapData.get(region)?.count || 0;
+      const logoUrl = getLogoUrlForRegion(region);
+      const regionColor = getRegionColor(region);
+      return `<div class="region-tag" data-region="${region.replace(/"/g, '&quot;')}" style="background-color: ${regionColor};">
+        <img src="${logoUrl}" style="width:14px;height:14px;object-fit:contain;border-radius:2px;" onerror="this.style.display='none'">
+        ${region.length>20?region.slice(0,17)+'…':region} (${cnt})
+        <i class="fas fa-times-circle"></i>
+      </div>`;
+    }).join('');
+    document.querySelectorAll('.region-tag').forEach(tag => {
+      tag.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const regionName = tag.getAttribute('data-region');
+        if (regionName) { 
+          selectedRegions.delete(regionName); 
+          updateSelectedRegionsTags(); 
+          updateMapMarkers(); 
+          renderDropdown(document.getElementById('regionSearchInput').value); 
+          updateStatsDisplay();
+          zoomToSelectedRegions();
+        }
+      });
+    });
+  }
+  
+  function selectAllRegions() {
+    const allRegions = Array.from(regionMapData.keys()).filter(r => r !== "Unspecified Region");
+    selectedRegions.clear();
+    allRegions.forEach(region => selectedRegions.add(region));
+    updateSelectedRegionsTags();
+    updateMapMarkers();
+    renderDropdown(document.getElementById('regionSearchInput').value);
+    updateStatsDisplay();
+    setTimeout(() => zoomToSelectedRegions(), 100);
+  }
+  
+  function clearAll() { 
+    selectedRegions.clear(); 
+    updateSelectedRegionsTags(); 
+    updateMapMarkers(); 
+    renderDropdown(''); 
+    updateStatsDisplay(); 
+    resetToDefaultView();
+  }
+  
+  function zoomToCountry(lat, lng, zoomLevel) { 
+    map.setView([parseFloat(lat), parseFloat(lng)], parseInt(zoomLevel)); 
+  }
+  
+  // Load GeoJSON with regions and apply color based on NAME_1 property
+  async function loadRegionsGeoJSON() {
+    try {
+      const response = await fetch("FBLS_Countries.geojson");
+      if (!response.ok) throw new Error(`HTTP ${response.status} - GeoJSON not found`);
+      const geojsonData = await response.json();
+      if (geoJsonLayer) map.removeLayer(geoJsonLayer);
+      geoJsonLayer = L.geoJSON(geojsonData, {
+        style: styleRegion,
+        onEachFeature: function(feature, layer) {
+          layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: onRegionClick
+          });
+        }
+      }).addTo(map);
+      console.log("✅ Regions layer loaded & colored by NAME_1 property");
+    } catch (err) {
+      console.warn("⚠️ Could not load FBLS_Countries.geojson, using fallback. Error:", err);
+    }
+  }
+  
+  async function init() {
+    await loadLogoMapping();
+    fetch('FBLS.geojson')
+      .then(res => res.json())
+      .then(data => {
+        allStoresFeatures = data.features || [];
+        console.log("Total stores loaded:", allStoresFeatures.length);
+        buildRegionIndex(allStoresFeatures);
+        updateMapMarkers();
+        renderDropdown('');
+        updateStatsDisplay();
+      })
+      .catch(err => console.error("GeoJSON error:", err));
+    await loadRegionsGeoJSON();
+  }
+  
+  document.addEventListener('DOMContentLoaded', init);
+  
+  const searchInput = document.getElementById('regionSearchInput');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  const container = document.getElementById('regionDropdownContainer');
+  searchInput.addEventListener('focus', () => { renderDropdown(searchInput.value); dropdownMenu.classList.add('show'); });
+  searchInput.addEventListener('input', (e) => { renderDropdown(e.target.value); dropdownMenu.classList.add('show'); });
+  document.addEventListener('click', (e) => { if (!container?.contains(e.target)) dropdownMenu.classList.remove('show'); });
+  document.getElementById('selectAllBtn').addEventListener('click', selectAllRegions);
+  document.getElementById('clearRegionBtn').addEventListener('click', clearAll);
+  document.getElementById('resetViewBtn').addEventListener('click', resetToDefaultView);
+  document.getElementById('toggleStoresBtn').addEventListener('click', toggleStores);
+  document.querySelectorAll('.btn-country').forEach(btn => { 
+    btn.addEventListener('click', () => zoomToCountry(btn.dataset.lat, btn.dataset.lng, btn.dataset.zoom)); 
+  });
+</script>
+</body>
+</html>
