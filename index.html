@@ -172,6 +172,109 @@
     
     .map-wrapper { flex: 1; position: relative; height: 100vh; }
     #map { height: 100%; width: 100%; }
+    
+    /* ========== LEGEND STYLES - HORIZONTAL AT BOTTOM ========== */
+    .legend-container {
+      position: absolute;
+      bottom: 20px;
+      left: 450px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      padding: 12px 16px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+    
+    .legend-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--theme-primary-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+    }
+    
+    .legend-items {
+      display: none;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.8);
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    
+    .legend-item:hover {
+      background: white;
+      border-color: var(--theme-primary);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .legend-color {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: white;
+    }
+    
+    .legend-color img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+    
+    .legend-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #2c3e50;
+      white-space: nowrap;
+    }
+    
+    .legend-item.highlight {
+      background: rgba(26, 188, 156, 0.15);
+      border-color: var(--theme-primary);
+    }
+    
+    @media (max-width: 900px) {
+      .legend-container {
+        left: 330px;
+        right: 10px;
+        padding: 8px 12px;
+      }
+      .legend-items { gap: 8px; }
+      .legend-label { font-size: 0.6rem; white-space: normal; }
+      .legend-color { width: 20px; height: 20px; }
+      .legend-color img { width: 16px; height: 16px; }
+    }
+    
+    @media (max-width: 720px) {
+      .legend-container { left: 10px; right: 10px; bottom: 10px; }
+      .sidebar { width: 320px; }
+    }
+    
     .custom-marker-logo { background: white; border-radius: 50%; border: 2px solid; box-shadow: 0 1px 5px rgba(0,0,0,0.2); overflow: hidden; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .custom-marker-logo img { width: 26px; height: 26px; object-fit: contain; }
     
@@ -198,8 +301,6 @@
     .popup-info i { width: 18px; color: var(--theme-primary); }
     
     .map-loading { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 12px; border-radius: 20px; z-index: 1000; font-size: 11px; display: none; }
-    
-    @media (max-width: 720px) { .sidebar { width: 320px; } }
   </style>
 </head>
 <body>
@@ -242,6 +343,15 @@
     <div id="map"></div>
     <div id="mapLoadingOverlay" class="map-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
   </div>
+</div>
+
+<!-- LEGEND HORIZONTAL BAR -->
+<div id="legendContainer" class="legend-container" style="display: none;">
+  <div class="legend-title">
+    <i class="fas fa-tag"></i> REGIONS LEGEND
+    <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto; cursor: pointer;" id="legendToggleBtn"></i>
+  </div>
+  <div id="legendItems" class="legend-items"></div>
 </div>
 
 <script>
@@ -407,7 +517,7 @@
   let allStoresFeatures = [];
   let regionMapData = new Map();
   let selectedRegions = new Set();
-  let selectedCountry = null;  // NEW: Track selected country filter
+  let selectedCountry = null;
   let isUpdating = false;
   let geoJsonLayer = null;
   let storesVisible = true;
@@ -431,12 +541,10 @@
     return countryMap[code] || code || '—';
   }
   
-  // NEW: Get stores filtered by selected country
   function getFilteredStores() {
     if (selectedCountry === null) {
       return allStoresFeatures;
     }
-    // Filter stores by country code
     return allStoresFeatures.filter(feature => {
       const storeCountry = feature.properties?.CLI_CODE_P;
       return storeCountry === selectedCountry;
@@ -446,7 +554,6 @@
   function zoomToSelectedRegions() {
     if (selectedRegions.size === 0) {
       if (selectedCountry !== null) {
-        // Zoom to country bounds if country is selected
         const countryBtn = document.querySelector(`.btn-country[data-country="${selectedCountry}"]`);
         if (countryBtn) {
           const lat = countryBtn.dataset.lat;
@@ -527,18 +634,20 @@
     
     const popupLogoUrl = getLogoUrlForRegion(region);
     const popupHtml = `
-      <div class="popup-store-card">
-        <div class="popup-logo"><img src="${popupLogoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>
-        <div class="popup-info">
-          <h4><i class="fas fa-store"></i> ${props.CLI_RAISON || 'Store'}</h4>
-          <p><i class="fas fa-building"></i> <strong>Department:</strong> ${props.CLI_DEP_FR || '—'}</p>
-          <p><i class="fas fa-map-pin"></i> <strong>Region:</strong> ${region}</p>
-          <p><i class="fas fa-city"></i> <strong>City:</strong> ${props.CLI_VILLE || '—'}</p>
-          <p><i class="fas fa-flag"></i> <strong>Country:</strong> ${getCountryFullName(props.CLI_CODE_P)}</p>
-          <p><i class="fas fa-location-dot"></i> <strong>Address:</strong> ${props.Address || props.CLI_ADRESSE || '—'}</p>
-        </div>
-      </div>
-    `;
+  <div class="popup-store-card">
+    <div class="popup-logo"><img src="${popupLogoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>
+    <div class="popup-info">
+      <h4><i class="fas fa-store"></i> ${props.CLI_RAISON || 'Store'}</h4>
+      <p><i class="fas fa-building"></i> <strong>Department:</strong> ${props.CLI_DEP_FR || '—'}</p>
+      <p><i class="fas fa-user-tie"></i> <strong>Sales Representative:</strong> ${props.CLI_CODE_V || '—'}</p>
+      <p><i class="fas fa-map-pin"></i> <strong>Region:</strong> ${region}</p>
+      <p><i class="fas fa-city"></i> <strong>City:</strong> ${props.CLI_VILLE || '—'}</p>
+      <p><i class="fas fa-flag"></i> <strong>Country:</strong> ${getCountryFullName(props.CLI_CODE_P)}</p>
+      <p><i class="fas fa-location-dot"></i> <strong>Address:</strong> ${props.Address || props.CLI_ADRESSE || '—'}</p>
+      
+    </div>
+  </div>
+`;
     marker.bindPopup(popupHtml, { maxWidth: 320, minWidth: 260 });
     return marker;
   }
@@ -559,7 +668,6 @@
     });
   }
   
-  // UPDATED: Update markers with country filter
   function updateMapMarkers() {
     if (isUpdating) return;
     isUpdating = true;
@@ -577,7 +685,6 @@
             zoomToBoundsOnClick: true
           });
           
-          // Get filtered stores based on selected country
           let filteredStores = getFilteredStores();
           
           let featuresToShow;
@@ -588,7 +695,6 @@
             selectedRegions.forEach(region => {
               const regionData = regionMapData.get(region);
               if (regionData && regionData.features) {
-                // Also filter by country if needed
                 let regionFeatures = regionData.features;
                 if (selectedCountry !== null) {
                   regionFeatures = regionFeatures.filter(f => f.properties?.CLI_CODE_P === selectedCountry);
@@ -615,10 +721,8 @@
     }, 50);
   }
   
-  // NEW: Filter by country
   function filterByCountry(countryCode, lat, lng, zoom) {
     if (selectedCountry === countryCode) {
-      // If same country clicked again, clear filter
       selectedCountry = null;
       document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
     } else {
@@ -628,15 +732,10 @@
       if (activeBtn) activeBtn.classList.add('active');
     }
     
-    // Clear region selection when filtering by country
     selectedRegions.clear();
     updateSelectedRegionsTags();
     renderDropdown(document.getElementById('regionSearchInput').value);
-    
-    // Update markers
     updateMapMarkers();
-    
-    // Zoom to country
     map.setView([parseFloat(lat), parseFloat(lng)], parseInt(zoom));
   }
   
@@ -672,7 +771,6 @@
     const term = searchVal.toLowerCase().trim();
     let filteredStores = getFilteredStores();
     
-    // Rebuild region index based on filtered stores for dropdown
     let tempRegionMap = new Map();
     filteredStores.forEach(feature => {
       let region = feature.properties?.CLI_REGION?.trim();
@@ -748,6 +846,55 @@
     });
   }
   
+  // ======================== LEGEND FUNCTION ========================
+  function updateLegend() {
+    const legendContainer = document.getElementById('legendContainer');
+    const legendItemsDiv = document.getElementById('legendItems');
+    
+    if (!legendItemsDiv) return;
+    
+    // Get all unique regions from data
+    let allRegions = Array.from(regionMapData.keys()).filter(r => r !== "Unspecified Region");
+    allRegions.sort();
+    
+    if (allRegions.length === 0) {
+      legendContainer.style.display = 'none';
+      return;
+    }
+    
+    legendContainer.style.display = 'block';
+    
+    legendItemsDiv.innerHTML = allRegions.map(region => {
+      const regionColor = getRegionColor(region);
+      const logoUrl = getLogoUrlForRegion(region);
+      const isSelected = selectedRegions.has(region);
+      
+      return `
+        <div class="legend-item ${isSelected ? 'highlight' : ''}" data-region="${region.replace(/"/g, '&quot;')}" onclick="selectRegionFromLegend('${region.replace(/'/g, "\\'")}')">
+          <div class="legend-color" style="background-color: ${regionColor};">
+            <img src="${logoUrl}" onerror="this.style.display='none'">
+          </div>
+          <span class="legend-label">${region.length > 18 ? region.slice(0, 15) + '…' : region}</span>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  // Global function for legend click
+  window.selectRegionFromLegend = function(regionName) {
+    if (selectedRegions.has(regionName)) {
+      selectedRegions.delete(regionName);
+    } else {
+      selectedRegions.add(regionName);
+    }
+    updateSelectedRegionsTags();
+    updateMapMarkers();
+    renderDropdown(document.getElementById('regionSearchInput').value);
+    updateStatsDisplay();
+    zoomToSelectedRegions();
+    updateLegend(); // Update legend highlight
+  };
+  
   function selectAllRegions() {
     let filteredStores = getFilteredStores();
     let tempRegionSet = new Set();
@@ -761,6 +908,7 @@
     updateMapMarkers();
     renderDropdown(document.getElementById('regionSearchInput').value);
     updateStatsDisplay();
+    updateLegend();
     setTimeout(() => zoomToSelectedRegions(), 100);
   }
   
@@ -771,7 +919,8 @@
     updateSelectedRegionsTags(); 
     updateMapMarkers(); 
     renderDropdown(''); 
-    updateStatsDisplay(); 
+    updateStatsDisplay();
+    updateLegend();
     resetToDefaultView();
   }
   
@@ -812,6 +961,7 @@
         updateMapMarkers();
         renderDropdown('');
         updateStatsDisplay();
+        updateLegend(); // Initialize legend
       })
       .catch(err => console.error("GeoJSON error:", err));
     await loadRegionsGeoJSON();
@@ -830,7 +980,26 @@
   document.getElementById('resetViewBtn').addEventListener('click', clearAll);
   document.getElementById('toggleStoresBtn').addEventListener('click', toggleStores);
   
-  // Updated country button handlers with filtering
+  // Legend toggle button
+  // Legend toggle button
+const legendToggleBtn = document.getElementById('legendToggleBtn');
+let legendExpanded = true;   // 👈 ISKO false KAR DO
+if (legendToggleBtn) {
+  legendToggleBtn.addEventListener('click', () => {
+    const legendItems = document.getElementById('legendItems');
+    if (legendExpanded) {
+      legendItems.style.display = 'none';
+      legendToggleBtn.classList.remove('fa-chevron-down');
+      legendToggleBtn.classList.add('fa-chevron-up');
+    } else {
+      legendItems.style.display = 'flex';
+      legendToggleBtn.classList.remove('fa-chevron-up');
+      legendToggleBtn.classList.add('fa-chevron-down');
+    }
+    legendExpanded = !legendExpanded;
+  });
+}
+  
   document.querySelectorAll('.btn-country').forEach(btn => { 
     btn.addEventListener('click', () => {
       const countryCode = btn.dataset.country;
@@ -838,6 +1007,7 @@
       const lng = btn.dataset.lng;
       const zoom = btn.dataset.zoom;
       filterByCountry(countryCode, lat, lng, zoom);
+      updateLegend();
     }); 
   });
 </script>
