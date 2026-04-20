@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Multi-Country Sales Territory Map | Themed by Region Colors</title>
+  <title>Multi-Country Sales Territory Map | Country Filter</title>
 
   <!-- Leaflet CSS + JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -28,27 +28,23 @@
       color: #1a2c3e; 
     }
     
-    /* ========== THEME VARIABLES (Inspired by Region Colors) ========== */
     :root {
-      --theme-primary: #1ABC9C;      /* Hauts-de-France / Pays de la Loire */
+      --theme-primary: #1ABC9C;
       --theme-primary-dark: #138a72;
-      --theme-secondary: #3498DB;    /* Centre-Val de Loire */
-      --theme-accent: #E74C3C;       /* Auvergne-Rhône-Alpes */
-      --theme-warning: #F39C12;      /* Occitanie */
-      --theme-dark: #2C3E50;         /* Île-de-France */
+      --theme-secondary: #3498DB;
+      --theme-accent: #E74C3C;
+      --theme-warning: #F39C12;
+      --theme-dark: #2C3E50;
       --theme-light: #F9FBFD;
-      --border-radius-card: 24px;
       --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
       --transition: all 0.2s ease;
     }
     
     .app-container { display: flex; height: 100%; width: 100%; }
     
-    /* ========== SIDEBAR WITH THEME ========== */
     .sidebar {
       width: 440px; 
       background: var(--theme-light); 
-      backdrop-filter: blur(2px);
       border-right: 1px solid rgba(0, 0, 0, 0.06); 
       display: flex; 
       flex-direction: column;
@@ -82,7 +78,6 @@
     }
     .total-value { font-size: 2rem; font-weight: 800; }
     
-    /* Country Buttons Themed */
     .country-buttons { display: flex; gap: 10px; margin: 1rem 1.5rem 0.8rem; flex-wrap: wrap; }
     .btn-country {
       flex: 1; background: white; border: 1px solid #e2edf2; border-radius: 40px;
@@ -90,8 +85,12 @@
       transition: var(--transition);
     }
     .btn-country:hover { background: var(--theme-primary); color: white; border-color: var(--theme-primary); }
+    .btn-country.active {
+      background: var(--theme-primary);
+      color: white;
+      border-color: var(--theme-primary);
+    }
     
-    /* Action Buttons Themed */
     .action-buttons { 
       display: flex; 
       gap: 12px; 
@@ -113,45 +112,40 @@
       transition: var(--transition);
     }
     .btn-primary { background: var(--theme-primary); color: white; }
-    .btn-primary:hover { background: var(--theme-primary-dark); transform: translateY(-1px); }
+    .btn-primary:hover { background: var(--theme-primary-dark); }
     .btn-outline { background: white; border: 1px solid #cfdfe2; color: var(--theme-dark); }
     .btn-outline:hover { border-color: var(--theme-primary); color: var(--theme-primary); }
     .btn-reset { background: #f0f6fa; border: 1px solid #cfdfe2; color: var(--theme-primary-dark); }
-    .btn-reset:hover { background: #e6f0f5; }
     .btn-toggle { background: var(--theme-warning); color: white; border: none; }
     .btn-toggle.off { background: #95a5a6; }
     
-    /* Dropdown / Search Area Themed */
     .region-search-area { margin: 0.5rem 1.5rem; }
     .custom-dropdown { position: relative; width: 100%; }
     .dropdown-input {
       width: 100%; padding: 10px 15px 10px 40px; border: 1.5px solid #e2edf2; border-radius: 40px;
-      font-size: 0.85rem; background: #ffffff; transition: var(--transition);
+      font-size: 0.85rem; background: #ffffff;
     }
-    .dropdown-input:focus { outline: none; border-color: var(--theme-primary); box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2); }
-    .dropdown-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--theme-primary); font-size: 14px; }
+    .dropdown-input:focus { outline: none; border-color: var(--theme-primary); }
+    .dropdown-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--theme-primary); }
     .dropdown-arrow { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #8ea0b0; }
     .dropdown-menu {
-      position: absolute; top: 55px; left: 0; width: 100%; background: #ffffff; border-radius: 20px;
+      position: absolute; top: 55px; left: 0; width: 100%; background: white; border-radius: 20px;
       box-shadow: var(--shadow-sm); max-height: 250px; overflow-y: auto; z-index: 200; display: none;
-      border: 1px solid rgba(0,0,0,0.05);
     }
     .dropdown-menu.show { display: block; }
     .dropdown-option { 
       padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; 
-      cursor: pointer; border-bottom: 1px solid #eff3f8; gap: 8px;
-      transition: var(--transition);
+      cursor: pointer; border-bottom: 1px solid #eff3f8;
     }
     .dropdown-option:hover { background: rgba(26, 188, 156, 0.08); }
-    .dropdown-option.selected { background: rgba(26, 188, 156, 0.12); font-weight: 600; color: var(--theme-primary-dark); }
+    .dropdown-option.selected { background: rgba(26, 188, 156, 0.12); font-weight: 600; }
     .option-left { display: flex; align-items: center; gap: 10px; flex: 1; }
-    .option-logo { width: 24px; height: 24px; object-fit: contain; border-radius: 4px; }
+    .option-logo { width: 24px; height: 24px; object-fit: contain; }
     .checkbox-multi { width: 16px; height: 16px; border: 2px solid #cbdbe0; border-radius: 4px; display: inline-block; }
-    .dropdown-option.selected .checkbox-multi { background: var(--theme-primary); border-color: var(--theme-primary); position: relative; }
+    .dropdown-option.selected .checkbox-multi { background: var(--theme-primary); border-color: var(--theme-primary); }
     .dropdown-option.selected .checkbox-multi::after { content: "✓"; color: white; font-size: 10px; display: flex; justify-content: center; line-height: 12px; }
-    .region-badge-count { background: #eef2f7; padding: 2px 8px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
+    .region-badge-count { background: #eef2f7; padding: 2px 8px; border-radius: 30px; font-size: 0.65rem; }
     
-    /* Selected Tags Container - Dynamic colors come from JS */
     .selected-regions-container {
       margin: 0.5rem 1.5rem; 
       max-height: 100px; 
@@ -163,7 +157,6 @@
       background: #fafcfd; 
       border-radius: 20px; 
       min-height: 50px;
-      border: 1px dashed rgba(0,0,0,0.08);
     }
     .region-tag { 
       color: white; 
@@ -174,13 +167,9 @@
       align-items: center; 
       gap: 6px; 
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .region-tag:hover { opacity: 0.85; transform: scale(1.02); }
-    .region-tag i { font-size: 9px; }
+    .region-tag:hover { opacity: 0.85; }
     
-    /* Map & Markers */
     .map-wrapper { flex: 1; position: relative; height: 100vh; }
     #map { height: 100%; width: 100%; }
     .custom-marker-logo { background: white; border-radius: 50%; border: 2px solid; box-shadow: 0 1px 5px rgba(0,0,0,0.2); overflow: hidden; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -200,10 +189,12 @@
     }
     .cluster-marker img { width: 30px; height: 30px; object-fit: contain; }
     
-    .leaflet-popup-content { margin: 12px 16px; min-width: 260px; }
-    .popup-store-card { display: flex; gap: 14px; align-items: center; }
-    .popup-logo { width: 60px; height: 60px; background: #f4f6f9; border-radius: 16px; display: flex; align-items: center; justify-content: center; padding: 8px; }
+    .leaflet-popup-content { margin: 12px 16px; min-width: 280px; }
+    .popup-store-card { display: flex; gap: 14px; align-items: flex-start; }
+    .popup-logo { width: 60px; height: 60px; background: #f4f6f9; border-radius: 16px; display: flex; align-items: center; justify-content: center; padding: 8px; flex-shrink: 0; }
+    .popup-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
     .popup-info h4 { font-size: 0.95rem; font-weight: 800; color: var(--theme-primary-dark); margin-bottom: 6px; }
+    .popup-info p { margin: 4px 0; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
     .popup-info i { width: 18px; color: var(--theme-primary); }
     
     .map-loading { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 12px; border-radius: 20px; z-index: 1000; font-size: 11px; display: none; }
@@ -254,7 +245,7 @@
 </div>
 
 <script>
-  // ======================== HELPER: Google Drive to direct image URL ========================
+  // ======================== HELPER FUNCTIONS ========================
   function convertDriveLinkToDirectUrl(driveUrl) {
     if (!driveUrl) return null;
     if (driveUrl.includes('googleusercontent.com') || driveUrl.includes('.png') || driveUrl.includes('.jpg')) {
@@ -340,11 +331,9 @@
     return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
   }
   
-  // ======================== NAME_1 BASED COLOR CODING ========================
-  // 20 unique regions - each gets a distinct color (same as polygon colors) AND UI uses these
+  // ======================== COLOR CODING ========================
   function getRegionColor(regionName) {
     if (!regionName) return "#A8D8EA";
-    
     const colorMap = {
       "Auvergne-Rhône-Alpes": "#E74C3C",
       "Bourgogne-Franche-Comté": "#E67E22",
@@ -367,11 +356,9 @@
       "Vlaanderen": "#E67E22",
       "Wallonie": "#27AE60"
     };
-    
     return colorMap[regionName] || "#A8D8EA";
   }
   
-  // Style function for GeoJSON polygons using NAME_1 property
   function styleRegion(feature) {
     let regionName = feature.properties?.NAME_1 || "";
     const fillColor = getRegionColor(regionName);
@@ -380,26 +367,18 @@
       weight: 1.2,
       opacity: 0.8,
       color: "#ffffff",
-      fillOpacity: 10,
+      fillOpacity: 50,
       dashArray: null
     };
   }
   
-  // Highlight effect on hover
   function highlightFeature(e) {
     const layer = e.target;
     if (!layer.feature) return;
-    layer.setStyle({
-      weight: 2.5,
-      color: "#333",
-      fillOpacity: 0.85,
-      dashArray: ""
-    });
-    if (!L.Browser.ie && !L.Browser.opera) {
-      layer.bringToFront();
-    }
+    layer.setStyle({ weight: 2.5, color: "#333", fillOpacity: 0.85 });
+    if (!L.Browser.ie && !L.Browser.opera) layer.bringToFront();
     const regionName = layer.feature.properties?.NAME_1 || "Unknown Region";
-    layer.bindTooltip(regionName, { sticky: true, className: "region-tooltip" }).openTooltip();
+    layer.bindTooltip(regionName, { sticky: true }).openTooltip();
   }
   
   function resetHighlight(e) {
@@ -411,13 +390,12 @@
   function onRegionClick(e) {
     const props = e.target.feature.properties;
     const regionName = props?.NAME_1 || "Region";
-    console.log("Clicked on region:", regionName);
     if (e.target.getBounds) {
       map.fitBounds(e.target.getBounds(), { padding: [30, 30] });
     }
   }
   
-  // ======================== STORE MARKERS & CLUSTER LOGIC ========================
+  // ======================== MAIN MAP LOGIC ========================
   const map = L.map('map').setView([46.8, 3.5], 6);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
@@ -429,6 +407,7 @@
   let allStoresFeatures = [];
   let regionMapData = new Map();
   let selectedRegions = new Set();
+  let selectedCountry = null;  // NEW: Track selected country filter
   let isUpdating = false;
   let geoJsonLayer = null;
   let storesVisible = true;
@@ -447,9 +426,37 @@
     return colors[countryCode] || '#6c757d';
   }
   
+  function getCountryFullName(code) {
+    const countryMap = { 'BE': 'Belgium', 'CH': 'Switzerland', 'FR': 'France', 'LU': 'Luxembourg' };
+    return countryMap[code] || code || '—';
+  }
+  
+  // NEW: Get stores filtered by selected country
+  function getFilteredStores() {
+    if (selectedCountry === null) {
+      return allStoresFeatures;
+    }
+    // Filter stores by country code
+    return allStoresFeatures.filter(feature => {
+      const storeCountry = feature.properties?.CLI_CODE_P;
+      return storeCountry === selectedCountry;
+    });
+  }
+  
   function zoomToSelectedRegions() {
     if (selectedRegions.size === 0) {
-      resetToDefaultView();
+      if (selectedCountry !== null) {
+        // Zoom to country bounds if country is selected
+        const countryBtn = document.querySelector(`.btn-country[data-country="${selectedCountry}"]`);
+        if (countryBtn) {
+          const lat = countryBtn.dataset.lat;
+          const lng = countryBtn.dataset.lng;
+          const zoom = countryBtn.dataset.zoom;
+          map.setView([parseFloat(lat), parseFloat(lng)], parseInt(zoom));
+        }
+      } else {
+        resetToDefaultView();
+      }
       return;
     }
     const points = [];
@@ -467,6 +474,11 @@
     if (points.length > 0) {
       const bounds = L.latLngBounds(points);
       map.fitBounds(bounds, { padding: [50, 50] });
+    } else if (selectedCountry !== null) {
+      const countryBtn = document.querySelector(`.btn-country[data-country="${selectedCountry}"]`);
+      if (countryBtn) {
+        map.setView([parseFloat(countryBtn.dataset.lat), parseFloat(countryBtn.dataset.lng)], parseInt(countryBtn.dataset.zoom));
+      }
     } else {
       resetToDefaultView();
     }
@@ -488,10 +500,7 @@
     let maxCount = 0;
     let mostCommonLogo = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
     for (let [logo, count] of logoCount) {
-      if (count > maxCount) {
-        maxCount = count;
-        mostCommonLogo = logo;
-      }
+      if (count > maxCount) { maxCount = count; mostCommonLogo = logo; }
     }
     return mostCommonLogo;
   }
@@ -506,45 +515,33 @@
   }
   
   function createLogoMarker(feature, latlng) {
-  const props = feature.properties;
-  const region = props.CLI_REGION || 'Store';
-  const logoUrl = getLogoUrlForRegion(region);
-  const countryCode = props.CLI_CODE_P || 'FR';
-  const borderColor = getMarkerColor(countryCode);
-  
-  // Add this helper function INSIDE createLogoMarker or outside
-  function getCountryFullName(code) {
-    const countryMap = {
-      'BE': 'Belgium',
-      'CH': 'Switzerland', 
-      'FR': 'France',
-      'LU': 'Luxembourg'
-    };
-    return countryMap[code] || code || '—';
-  }
-  
-  const markerHtml = `<div class="custom-marker-logo" style="border-color: ${borderColor};"><img src="${logoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>`;
-  const icon = L.divIcon({ html: markerHtml, className: 'custom-div-marker', iconSize: [32, 32], popupAnchor: [0, -16] });
-  const marker = L.marker(latlng, { icon: icon });
-  
-  const popupLogoUrl = getLogoUrlForRegion(region);
-  const popupHtml = `
-    <div class="popup-store-card">
-      <div class="popup-logo"><img src="${popupLogoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>
-      <div class="popup-info">
-        <h4><i class="fas fa-store"></i> ${props.CLI_RAISON || 'Store'}</h4>
-        <p><i class="fas fa-building"></i> <strong>Department:</strong> ${props.CLI_DEP_FR || '—'}</p>
-        <p><i class="fas fa-map-pin"></i> <strong>Region:</strong> ${region}</p>
-        <p><i class="fas fa-city"></i> <strong>City:</strong> ${props.CLI_VILLE || '—'}</p>
-        <p><i class="fas fa-flag"></i> <strong>Country:</strong> ${getCountryFullName(props.CLI_CODE_P)}</p>
-        <p><i class="fas fa-location-dot"></i> <strong>Address:</strong> ${props.Address || props.CLI_ADRESSE || '—'}</p>
+    const props = feature.properties;
+    const region = props.CLI_REGION || 'Store';
+    const logoUrl = getLogoUrlForRegion(region);
+    const countryCode = props.CLI_CODE_P || 'FR';
+    const borderColor = getMarkerColor(countryCode);
+    
+    const markerHtml = `<div class="custom-marker-logo" style="border-color: ${borderColor};"><img src="${logoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>`;
+    const icon = L.divIcon({ html: markerHtml, className: 'custom-div-marker', iconSize: [32, 32], popupAnchor: [0, -16] });
+    const marker = L.marker(latlng, { icon: icon });
+    
+    const popupLogoUrl = getLogoUrlForRegion(region);
+    const popupHtml = `
+      <div class="popup-store-card">
+        <div class="popup-logo"><img src="${popupLogoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>
+        <div class="popup-info">
+          <h4><i class="fas fa-store"></i> ${props.CLI_RAISON || 'Store'}</h4>
+          <p><i class="fas fa-building"></i> <strong>Department:</strong> ${props.CLI_DEP_FR || '—'}</p>
+          <p><i class="fas fa-map-pin"></i> <strong>Region:</strong> ${region}</p>
+          <p><i class="fas fa-city"></i> <strong>City:</strong> ${props.CLI_VILLE || '—'}</p>
+          <p><i class="fas fa-flag"></i> <strong>Country:</strong> ${getCountryFullName(props.CLI_CODE_P)}</p>
+          <p><i class="fas fa-location-dot"></i> <strong>Address:</strong> ${props.Address || props.CLI_ADRESSE || '—'}</p>
+        </div>
       </div>
-    </div>
-  `;
-  
-  marker.bindPopup(popupHtml, { maxWidth: 320, minWidth: 260 });
-  return marker;
-}
+    `;
+    marker.bindPopup(popupHtml, { maxWidth: 320, minWidth: 260 });
+    return marker;
+  }
   
   function buildRegionIndex(features) {
     regionMapData.clear();
@@ -562,6 +559,7 @@
     });
   }
   
+  // UPDATED: Update markers with country filter
   function updateMapMarkers() {
     if (isUpdating) return;
     isUpdating = true;
@@ -572,25 +570,35 @@
         
         if (storesVisible) {
           currentClusterGroup = L.markerClusterGroup({
-            maxClusterRadius: 20,
+            maxClusterRadius: 30,
             iconCreateFunction: createClusterMarker,
             spiderfyOnMaxZoom: true,
             showCoverageOnHover: false,
             zoomToBoundsOnClick: true
           });
           
+          // Get filtered stores based on selected country
+          let filteredStores = getFilteredStores();
+          
           let featuresToShow;
           if (selectedRegions.size === 0) {
-            featuresToShow = allStoresFeatures;
+            featuresToShow = filteredStores;
           } else {
             featuresToShow = [];
             selectedRegions.forEach(region => {
               const regionData = regionMapData.get(region);
-              if (regionData && regionData.features) featuresToShow.push(...regionData.features);
+              if (regionData && regionData.features) {
+                // Also filter by country if needed
+                let regionFeatures = regionData.features;
+                if (selectedCountry !== null) {
+                  regionFeatures = regionFeatures.filter(f => f.properties?.CLI_CODE_P === selectedCountry);
+                }
+                featuresToShow.push(...regionFeatures);
+              }
             });
           }
           
-          console.log("Showing features:", featuresToShow.length);
+          console.log("Showing features:", featuresToShow.length, "Country filter:", selectedCountry);
           featuresToShow.forEach(feature => {
             const coords = feature.geometry?.coordinates;
             if (coords && coords.length >= 2) {
@@ -602,8 +610,34 @@
           currentClusterGroup = null;
         }
         hideLoading();
+        updateStatsDisplay();
       } catch(e) { console.warn(e); hideLoading(); } finally { isUpdating = false; }
     }, 50);
+  }
+  
+  // NEW: Filter by country
+  function filterByCountry(countryCode, lat, lng, zoom) {
+    if (selectedCountry === countryCode) {
+      // If same country clicked again, clear filter
+      selectedCountry = null;
+      document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
+    } else {
+      selectedCountry = countryCode;
+      document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.querySelector(`.btn-country[data-country="${countryCode}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+    
+    // Clear region selection when filtering by country
+    selectedRegions.clear();
+    updateSelectedRegionsTags();
+    renderDropdown(document.getElementById('regionSearchInput').value);
+    
+    // Update markers
+    updateMapMarkers();
+    
+    // Zoom to country
+    map.setView([parseFloat(lat), parseFloat(lng)], parseInt(zoom));
   }
   
   function toggleStores() {
@@ -621,12 +655,14 @@
   
   function updateStatsDisplay() {
     const totalElem = document.getElementById('totalStoresBig');
+    let filteredStores = getFilteredStores();
+    
     if (selectedRegions.size === 0) {
-      totalElem.innerText = allStoresFeatures.length;
+      totalElem.innerText = filteredStores.length;
     } else {
       let totalSelected = 0;
       selectedRegions.forEach(r => totalSelected += regionMapData.get(r)?.count || 0);
-      totalElem.innerText = `${totalSelected} / ${allStoresFeatures.length}`;
+      totalElem.innerText = `${totalSelected} / ${filteredStores.length}`;
     }
   }
   
@@ -634,12 +670,23 @@
     const menu = document.getElementById('dropdownMenu');
     if (!menu) return;
     const term = searchVal.toLowerCase().trim();
-    let regions = Array.from(regionMapData.keys()).filter(r => r !== "Unspecified Region");
+    let filteredStores = getFilteredStores();
+    
+    // Rebuild region index based on filtered stores for dropdown
+    let tempRegionMap = new Map();
+    filteredStores.forEach(feature => {
+      let region = feature.properties?.CLI_REGION?.trim();
+      if (!region || region === "") region = "Unspecified Region";
+      tempRegionMap.set(region, (tempRegionMap.get(region) || 0) + 1);
+    });
+    
+    let regions = Array.from(tempRegionMap.keys()).filter(r => r !== "Unspecified Region");
     if (term) regions = regions.filter(r => r.toLowerCase().includes(term));
     regions.sort();
+    
     if (!regions.length) { menu.innerHTML = `<div style="padding:12px;text-align:center;">No regions found</div>`; return; }
     menu.innerHTML = regions.map(region => {
-      const count = regionMapData.get(region).count;
+      const count = tempRegionMap.get(region);
       const isSelected = selectedRegions.has(region);
       const logoUrl = getLogoUrlForRegion(region);
       return `<div class="dropdown-option ${isSelected ? 'selected' : ''}" data-region="${region.replace(/"/g, '&quot;')}">
@@ -702,9 +749,14 @@
   }
   
   function selectAllRegions() {
-    const allRegions = Array.from(regionMapData.keys()).filter(r => r !== "Unspecified Region");
+    let filteredStores = getFilteredStores();
+    let tempRegionSet = new Set();
+    filteredStores.forEach(feature => {
+      let region = feature.properties?.CLI_REGION?.trim();
+      if (region && region !== "Unspecified Region") tempRegionSet.add(region);
+    });
     selectedRegions.clear();
-    allRegions.forEach(region => selectedRegions.add(region));
+    tempRegionSet.forEach(region => selectedRegions.add(region));
     updateSelectedRegionsTags();
     updateMapMarkers();
     renderDropdown(document.getElementById('regionSearchInput').value);
@@ -714,6 +766,8 @@
   
   function clearAll() { 
     selectedRegions.clear(); 
+    selectedCountry = null;
+    document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
     updateSelectedRegionsTags(); 
     updateMapMarkers(); 
     renderDropdown(''); 
@@ -725,7 +779,6 @@
     map.setView([parseFloat(lat), parseFloat(lng)], parseInt(zoomLevel)); 
   }
   
-  // Load GeoJSON with regions and apply color based on NAME_1 property
   async function loadRegionsGeoJSON() {
     try {
       const response = await fetch("FBLS_Countries.geojson");
@@ -742,9 +795,9 @@
           });
         }
       }).addTo(map);
-      console.log("✅ Regions layer loaded & colored by NAME_1 property");
+      console.log("✅ Regions layer loaded");
     } catch (err) {
-      console.warn("⚠️ Could not load FBLS_Countries.geojson, using fallback. Error:", err);
+      console.warn("⚠️ Could not load FBLS_Countries.geojson", err);
     }
   }
   
@@ -774,10 +827,18 @@
   document.addEventListener('click', (e) => { if (!container?.contains(e.target)) dropdownMenu.classList.remove('show'); });
   document.getElementById('selectAllBtn').addEventListener('click', selectAllRegions);
   document.getElementById('clearRegionBtn').addEventListener('click', clearAll);
-  document.getElementById('resetViewBtn').addEventListener('click', resetToDefaultView);
+  document.getElementById('resetViewBtn').addEventListener('click', clearAll);
   document.getElementById('toggleStoresBtn').addEventListener('click', toggleStores);
+  
+  // Updated country button handlers with filtering
   document.querySelectorAll('.btn-country').forEach(btn => { 
-    btn.addEventListener('click', () => zoomToCountry(btn.dataset.lat, btn.dataset.lng, btn.dataset.zoom)); 
+    btn.addEventListener('click', () => {
+      const countryCode = btn.dataset.country;
+      const lat = btn.dataset.lat;
+      const lng = btn.dataset.lng;
+      const zoom = btn.dataset.zoom;
+      filterByCountry(countryCode, lat, lng, zoom);
+    }); 
   });
 </script>
 </body>
