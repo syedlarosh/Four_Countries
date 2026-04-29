@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
@@ -8,26 +9,32 @@
   <!-- Leaflet CSS + JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
+
   <!-- Leaflet Marker Cluster -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-  
+
   <!-- Font Awesome & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: 'Inter', sans-serif; 
-      background: #f0f4f8; 
-      height: 100vh; 
-      overflow: hidden; 
-      color: #1a2c3e; 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f4f8;
+      height: 100vh;
+      overflow: hidden;
+      color: #1a2c3e;
+    }
+
     :root {
       --theme-primary: #1ABC9C;
       --theme-primary-dark: #138a72;
@@ -36,93 +43,152 @@
       --theme-warning: #F39C12;
       --theme-dark: #2C3E50;
       --theme-light: #F9FBFD;
-      --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.05);
       --transition: all 0.2s ease;
     }
-    
-    .app-container { display: flex; height: 100%; width: 100%; }
-    
+
+    .app-container {
+      display: flex;
+      height: 100%;
+      width: 100%;
+    }
+
     .sidebar {
-      width: 440px; 
-      background: var(--theme-light); 
-      border-right: 1px solid rgba(0, 0, 0, 0.06); 
-      display: flex; 
+      width: 440px;
+      background: var(--theme-light);
+      border-right: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
       flex-direction: column;
-      box-shadow: 12px 0 32px -12px rgba(0, 0, 0, 0.1); 
+      box-shadow: 12px 0 32px -12px rgba(0, 0, 0, 0.1);
       z-index: 15;
-      height: 100vh; 
+      height: 100vh;
       overflow-y: auto;
     }
-    
+
     .sidebar-header {
-      padding: 1.5rem 1.5rem 1rem; 
+      padding: 1.5rem 1.5rem 1rem;
       background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
-      color: white; 
-      position: sticky; 
-      top: 0; 
+      color: white;
+      position: sticky;
+      top: 0;
       z-index: 20;
     }
-    .sidebar-header h2 { 
-      font-size: 1.4rem; 
-      font-weight: 700; 
-      display: flex; 
-      align-items: center; 
-      gap: 10px; 
+
+    .sidebar-header h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
     .big-stats-card {
-      background: rgba(255, 255, 255, 0.15); 
+      background: rgba(255, 255, 255, 0.15);
       border-radius: 20px;
-      padding: 0.8rem 1.2rem; 
+      padding: 0.8rem 1.2rem;
       margin-top: 1rem;
       backdrop-filter: blur(4px);
     }
-    .total-value { font-size: 2rem; font-weight: 800; }
-    
-    .country-buttons { display: flex; gap: 10px; margin: 1rem 1.5rem 0.8rem; flex-wrap: wrap; }
+
+    .total-value {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .country-buttons {
+      display: flex;
+      gap: 10px;
+      margin: 1rem 1.5rem 0.8rem;
+      flex-wrap: wrap;
+    }
+
     .btn-country {
-      flex: 1; background: white; border: 1px solid #e2edf2; border-radius: 40px;
-      padding: 6px 0; font-weight: 600; font-size: 0.7rem; cursor: pointer; 
+      flex: 1;
+      background: white;
+      border: 1px solid #e2edf2;
+      border-radius: 40px;
+      padding: 6px 0;
+      font-weight: 600;
+      font-size: 0.7rem;
+      cursor: pointer;
       transition: var(--transition);
     }
-    .btn-country:hover { background: var(--theme-primary); color: white; border-color: var(--theme-primary); }
+
+    .btn-country:hover {
+      background: var(--theme-primary);
+      color: white;
+      border-color: var(--theme-primary);
+    }
+
     .btn-country.active {
       background: var(--theme-primary);
       color: white;
       border-color: var(--theme-primary);
     }
-    
-    .action-buttons { 
-      display: flex; 
-      gap: 12px; 
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
       margin: 0.5rem 1.5rem 0.8rem;
       flex-wrap: wrap;
     }
-    .btn { 
-      flex: 1; 
-      padding: 8px 0; 
-      border-radius: 40px; 
-      font-size: 0.7rem; 
-      font-weight: 600; 
-      cursor: pointer; 
-      border: none; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      gap: 6px; 
+
+    .btn {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       transition: var(--transition);
     }
-    .btn-primary { background: var(--theme-primary); color: white; }
-    .btn-primary:hover { background: var(--theme-primary-dark); }
-    .btn-outline { background: white; border: 1px solid #cfdfe2; color: var(--theme-dark); }
-    .btn-outline:hover { border-color: var(--theme-primary); color: var(--theme-primary); }
-    .btn-reset { background: #f0f6fa; border: 1px solid #cfdfe2; color: var(--theme-primary-dark); }
-    .btn-toggle { background: var(--theme-warning); color: white; border: none; }
-    .btn-toggle.off { background: #95a5a6; }
-    
+
+    .btn-primary {
+      background: var(--theme-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--theme-primary-dark);
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid #cfdfe2;
+      color: var(--theme-dark);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--theme-primary);
+      color: var(--theme-primary);
+    }
+
+    .btn-reset {
+      background: #f0f6fa;
+      border: 1px solid #cfdfe2;
+      color: var(--theme-primary-dark);
+    }
+
+    .btn-toggle {
+      background: var(--theme-warning);
+      color: white;
+      border: none;
+    }
+
+    .btn-toggle.off {
+      background: #95a5a6;
+    }
+
     /* Dropdown common style */
     .search-section {
       margin: 0.5rem 1.5rem;
     }
+
     .section-label {
       font-size: 0.7rem;
       font-weight: 600;
@@ -132,59 +198,159 @@
       align-items: center;
       gap: 6px;
     }
-    .custom-dropdown { position: relative; width: 100%; }
+
+    .custom-dropdown {
+      position: relative;
+      width: 100%;
+    }
+
     .dropdown-input {
-      width: 100%; padding: 10px 15px 10px 40px; border: 1.5px solid #e2edf2; border-radius: 40px;
-      font-size: 0.85rem; background: #ffffff;
+      width: 100%;
+      padding: 10px 15px 10px 40px;
+      border: 1.5px solid #e2edf2;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      background: #ffffff;
     }
-    .dropdown-input:focus { outline: none; border-color: var(--theme-primary); }
-    .dropdown-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--theme-primary); }
-    .dropdown-arrow { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #8ea0b0; }
+
+    .dropdown-input:focus {
+      outline: none;
+      border-color: var(--theme-primary);
+    }
+
+    .dropdown-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--theme-primary);
+    }
+
+    .dropdown-arrow {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8ea0b0;
+    }
+
     .dropdown-menu {
-      position: absolute; top: 55px; left: 0; width: 100%; background: white; border-radius: 20px;
-      box-shadow: var(--shadow-sm); max-height: 250px; overflow-y: auto; z-index: 200; display: none;
+      position: absolute;
+      top: 55px;
+      left: 0;
+      width: 100%;
+      background: white;
+      border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 200;
+      display: none;
     }
-    .dropdown-menu.show { display: block; }
-    .dropdown-option { 
-      padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; 
-      cursor: pointer; border-bottom: 1px solid #eff3f8;
+
+    .dropdown-menu.show {
+      display: block;
     }
-    .dropdown-option:hover { background: rgba(26, 188, 156, 0.08); }
-    .dropdown-option.selected { background: rgba(26, 188, 156, 0.12); font-weight: 600; }
-    .option-left { display: flex; align-items: center; gap: 10px; flex: 1; }
-    .option-logo { width: 24px; height: 24px; object-fit: contain; }
-    .checkbox-multi { width: 16px; height: 16px; border: 2px solid #cbdbe0; border-radius: 4px; display: inline-block; }
-    .dropdown-option.selected .checkbox-multi { background: var(--theme-primary); border-color: var(--theme-primary); }
-    .dropdown-option.selected .checkbox-multi::after { content: "✓"; color: white; font-size: 10px; display: flex; justify-content: center; line-height: 12px; }
-    .badge-count { background: #eef2f7; padding: 2px 8px; border-radius: 30px; font-size: 0.65rem; }
-    
+
+    .dropdown-option {
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-bottom: 1px solid #eff3f8;
+    }
+
+    .dropdown-option:hover {
+      background: rgba(26, 188, 156, 0.08);
+    }
+
+    .dropdown-option.selected {
+      background: rgba(26, 188, 156, 0.12);
+      font-weight: 600;
+    }
+
+    .option-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .option-logo {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+
+    .checkbox-multi {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #cbdbe0;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .dropdown-option.selected .checkbox-multi {
+      background: var(--theme-primary);
+      border-color: var(--theme-primary);
+    }
+
+    .dropdown-option.selected .checkbox-multi::after {
+      content: "✓";
+      color: white;
+      font-size: 10px;
+      display: flex;
+      justify-content: center;
+      line-height: 12px;
+    }
+
+    .badge-count {
+      background: #eef2f7;
+      padding: 2px 8px;
+      border-radius: 30px;
+      font-size: 0.65rem;
+    }
+
     .selected-items-container {
-      margin: 0.5rem 1.5rem; 
-      max-height: 100px; 
-      overflow-y: auto; 
-      display: flex; 
+      margin: 0.5rem 1.5rem;
+      max-height: 100px;
+      overflow-y: auto;
+      display: flex;
       flex-wrap: wrap;
-      gap: 6px; 
-      padding: 8px 10px; 
-      background: #fafcfd; 
-      border-radius: 20px; 
+      gap: 6px;
+      padding: 8px 10px;
+      background: #fafcfd;
+      border-radius: 20px;
       min-height: 50px;
     }
-    .filter-tag { 
-      color: white; 
-      padding: 4px 10px; 
-      border-radius: 30px; 
-      font-size: 0.7rem; 
-      display: inline-flex; 
-      align-items: center; 
-      gap: 6px; 
+
+    .filter-tag {
+      color: white;
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       cursor: pointer;
     }
-    .filter-tag:hover { opacity: 0.85; }
-    
-    .map-wrapper { flex: 1; position: relative; height: 100vh; }
-    #map { height: 100%; width: 100%; }
-    
+
+    .filter-tag:hover {
+      opacity: 0.85;
+    }
+
+    .map-wrapper {
+      flex: 1;
+      position: relative;
+      height: 100vh;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
     .legend-container {
       position: absolute;
       bottom: 20px;
@@ -199,7 +365,7 @@
       border: 1px solid rgba(0, 0, 0, 0.08);
       transition: all 0.3s ease;
     }
-    
+
     .legend-title {
       font-size: 0.7rem;
       font-weight: 600;
@@ -210,7 +376,7 @@
       gap: 6px;
       letter-spacing: 0.5px;
     }
-    
+
     .legend-items {
       display: none;
       flex-wrap: wrap;
@@ -218,7 +384,7 @@
       align-items: center;
       justify-content: flex-start;
     }
-    
+
     .legend-item {
       display: flex;
       align-items: center;
@@ -230,14 +396,14 @@
       transition: all 0.2s ease;
       border: 1px solid transparent;
     }
-    
+
     .legend-item:hover {
       background: white;
       border-color: var(--theme-primary);
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-    
+
     .legend-color {
       width: 24px;
       height: 24px;
@@ -250,41 +416,84 @@
       overflow: hidden;
       background: white;
     }
-    
+
     .legend-color img {
       width: 20px;
       height: 20px;
       object-fit: contain;
     }
-    
+
     .legend-label {
       font-size: 0.7rem;
       font-weight: 500;
       color: #2c3e50;
       white-space: nowrap;
     }
-    
+
     .legend-item.highlight {
       background: rgba(26, 188, 156, 0.15);
       border-color: var(--theme-primary);
     }
-    
+
     @media (max-width: 900px) {
-      .legend-container { left: 330px; right: 10px; padding: 8px 12px; }
-      .legend-items { gap: 8px; }
-      .legend-label { font-size: 0.6rem; white-space: normal; }
-      .legend-color { width: 20px; height: 20px; }
-      .legend-color img { width: 16px; height: 16px; }
+      .legend-container {
+        left: 330px;
+        right: 10px;
+        padding: 8px 12px;
+      }
+
+      .legend-items {
+        gap: 8px;
+      }
+
+      .legend-label {
+        font-size: 0.6rem;
+        white-space: normal;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+      }
+
+      .legend-color img {
+        width: 16px;
+        height: 16px;
+      }
     }
-    
+
     @media (max-width: 720px) {
-      .legend-container { left: 10px; right: 10px; bottom: 10px; }
-      .sidebar { width: 320px; }
+      .legend-container {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .sidebar {
+        width: 320px;
+      }
     }
-    
-    .custom-marker-logo { background: white; border-radius: 50%; border: 2px solid; box-shadow: 0 1px 5px rgba(0,0,0,0.2); overflow: hidden; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .custom-marker-logo img { width: 26px; height: 26px; object-fit: contain; }
-    
+
+    .custom-marker-logo {
+      background: white;
+      border-radius: 50%;
+      border: 2px solid;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .custom-marker-logo img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
     .cluster-marker {
       background: white;
       border-radius: 50%;
@@ -293,769 +502,1139 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
       border: 2px solid var(--theme-primary);
       overflow: hidden;
     }
-    .cluster-marker img { width: 30px; height: 30px; object-fit: contain; }
-    
-    .leaflet-popup-content { margin: 12px 16px; min-width: 280px; }
-    .popup-store-card { display: flex; gap: 14px; align-items: flex-start; }
-    .popup-logo { width: 60px; height: 60px; background: #f4f6f9; border-radius: 16px; display: flex; align-items: center; justify-content: center; padding: 8px; flex-shrink: 0; }
-    .popup-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .popup-info h4 { font-size: 0.95rem; font-weight: 800; color: var(--theme-primary-dark); margin-bottom: 6px; }
-    .popup-info p { margin: 4px 0; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
-    .popup-info i { width: 18px; color: var(--theme-primary); }
-    
-    .map-loading { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 12px; border-radius: 20px; z-index: 1000; font-size: 11px; display: none; }
+
+    .cluster-marker img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    .leaflet-popup-content {
+      margin: 12px 16px;
+      min-width: 280px;
+    }
+
+    .popup-store-card {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .popup-logo {
+      width: 60px;
+      height: 60px;
+      background: #f4f6f9;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      flex-shrink: 0;
+    }
+
+    .popup-logo img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .popup-info h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--theme-primary-dark);
+      margin-bottom: 6px;
+    }
+
+    .popup-info p {
+      margin: 4px 0;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .popup-info i {
+      width: 18px;
+      color: var(--theme-primary);
+    }
+
+    .map-loading {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      z-index: 1000;
+      font-size: 11px;
+      display: none;
+    }
+
+    .custom-marker-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .custom-marker-logo {
+      background: white;
+      border-radius: 50%;
+      border: 2px solid;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    .custom-marker-logo:hover {
+      transform: scale(1.1);
+    }
+
+    .custom-marker-logo img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    /* Enhanced Department Label - Better Design */
+    .marker-label {
+      background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+      color: white;
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      font-weight: 600;
+      max-width: 90px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      backdrop-filter: blur(4px);
+      margin-top: 3px;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .marker-label:hover {
+      background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
+      transform: scale(1.05);
+      border-color: white;
+    }
+
+    /* Different colors for numeric vs text departments */
+    .marker-label[data-type="numeric"] {
+      background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+    }
+
+    .marker-label[data-type="alpha"] {
+      background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    }
+
+    /* Custom marker logo enhancement */
+    .custom-marker-logo {
+      background: white;
+      border-radius: 50%;
+      border: 2.5px solid;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .custom-marker-logo:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .custom-marker-logo img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    /* Animation for markers */
+    .custom-marker-container {
+      animation: fadeInUp 0.25s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Cluster marker enhancement */
+    .cluster-marker {
+      background: white;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+      border: 2.5px solid var(--theme-primary);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .cluster-marker:hover {
+      transform: scale(1.08);
+      border-color: var(--theme-primary-dark);
+    }
+
+    .cluster-marker img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    /* Selected region tags enhancement */
+    .filter-tag {
+      color: white;
+      padding: 5px 12px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-tag:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Legend item hover enhancement */
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 5px 12px;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.2s ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .legend-item:hover {
+      background: white;
+      border-color: var(--theme-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Popup design enhancement */
+    .popup-store-card {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .popup-logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .popup-info h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--theme-primary-dark);
+      margin-bottom: 8px;
+      border-bottom: 2px solid var(--theme-primary);
+      display: inline-block;
+      padding-bottom: 3px;
+    }
+
+    .popup-info p {
+      margin: 6px 0;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .popup-info i {
+      width: 18px;
+      color: var(--theme-primary);
+    }
+
+    /* Country buttons enhancement */
+    .btn-country {
+      flex: 1;
+      background: white;
+      border: 1.5px solid #e2edf2;
+      border-radius: 40px;
+      padding: 7px 0;
+      font-weight: 600;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-country:hover {
+      background: var(--theme-primary);
+      color: white;
+      border-color: var(--theme-primary);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Action buttons enhancement */
+    .btn {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--theme-primary-dark) 0%, var(--theme-primary) 100%);
+    }
   </style>
 </head>
+
 <body>
-<div class="app-container">
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <h2><i class="fas fa-store"></i>Multi-Country Sales Territory Map</h2>
-      <div class="big-stats-card">
-        <div class="total-value" id="totalStoresBig">0</div>
-        <div style="font-size:0.7rem; opacity:0.9;">Total Stores</div>
+  <div class="app-container">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2><i class="fas fa-store"></i> Multi-Country Sales</h2>
+        <div class="big-stats-card">
+          <div class="total-value" id="totalStoresBig">0</div>
+          <div style="font-size:0.7rem; opacity:0.9;">Total Stores</div>
+        </div>
+      </div>
+      <div class="country-buttons">
+        <button class="btn-country" data-country="FR" data-lat="46.5" data-lng="2.5" data-zoom="6">🇫🇷 France</button>
+        <button class="btn-country" data-country="CH" data-lat="46.8" data-lng="8.2" data-zoom="8">🇨🇭
+          Switzerland</button>
+        <button class="btn-country" data-country="BE" data-lat="50.5" data-lng="4.5" data-zoom="8">🇧🇪 Belgium</button>
+        <button class="btn-country" data-country="LU" data-lat="49.8" data-lng="6.1" data-zoom="10">🇱🇺
+          Luxembourg</button>
+      </div>
+
+      <div class="action-buttons">
+        <button id="selectAllBtn" class="btn btn-primary"><i class="fas fa-check-double"></i> All Regions</button>
+        <button id="selectAllDeptBtn" class="btn btn-primary" style="background:#3498DB;"><i
+            class="fas fa-check-double"></i> All Depts</button>
+        <button id="toggleStoresBtn" class="btn btn-toggle"><i class="fas fa-eye-slash"></i> Hide Stores</button>
+        <button id="resetViewBtn" class="btn btn-reset"><i class="fas fa-globe-europe"></i> Reset</button>
+        <button id="clearRegionBtn" class="btn btn-outline"><i class="fas fa-times"></i> Clear All</button>
+      </div>
+
+      <!-- REGION SEARCH SECTION -->
+      <div class="search-section">
+        <div class="section-label"><i class="fas fa-map-marker-alt"></i> Filter by REGION</div>
+        <div class="custom-dropdown" id="regionDropdownContainer">
+          <i class="fas fa-search dropdown-icon"></i>
+          <input type="text" id="regionSearchInput" class="dropdown-input" placeholder="Search regions..."
+            autocomplete="off">
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+          <div id="regionDropdownMenu" class="dropdown-menu"></div>
+        </div>
+      </div>
+      <div class="selected-items-container" id="selectedRegionsContainer">
+        <span style="color:#8ba0ae;font-size:0.7rem;">No region selected</span>
+      </div>
+
+      <!-- DEPARTMENT SEARCH SECTION (NEW) -->
+      <div class="search-section">
+        <div class="section-label"><i class="fas fa-building"></i> Filter by DEPARTMENT</div>
+        <div class="custom-dropdown" id="deptDropdownContainer">
+          <i class="fas fa-search dropdown-icon"></i>
+          <input type="text" id="deptSearchInput" class="dropdown-input" placeholder="Search departments..."
+            autocomplete="off">
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+          <div id="deptDropdownMenu" class="dropdown-menu"></div>
+        </div>
+      </div>
+      <div class="selected-items-container" id="selectedDeptsContainer">
+        <span style="color:#8ba0ae;font-size:0.7rem;">No department selected</span>
       </div>
     </div>
-    <div class="country-buttons">
-      <button class="btn-country" data-country="FR" data-lat="46.5" data-lng="2.5" data-zoom="6">🇫🇷 France</button>
-      <button class="btn-country" data-country="CH" data-lat="46.8" data-lng="8.2" data-zoom="8">🇨🇭 Switzerland</button>
-      <button class="btn-country" data-country="BE" data-lat="50.5" data-lng="4.5" data-zoom="8">🇧🇪 Belgium</button>
-      <button class="btn-country" data-country="LU" data-lat="49.8" data-lng="6.1" data-zoom="10">🇱🇺 Luxembourg</button>
-    </div>
-    
-    <div class="action-buttons">
-      <button id="selectAllBtn" class="btn btn-primary"><i class="fas fa-check-double"></i> All Regions</button>
-      <button id="selectAllDeptBtn" class="btn btn-primary" style="background:#3498DB;"><i class="fas fa-check-double"></i> All Depts</button>
-      <button id="toggleStoresBtn" class="btn btn-toggle"><i class="fas fa-eye-slash"></i> Hide Stores</button>
-      <button id="resetViewBtn" class="btn btn-reset"><i class="fas fa-globe-europe"></i> Reset</button>
-      <button id="clearRegionBtn" class="btn btn-outline"><i class="fas fa-times"></i> Clear All</button>
-    </div>
-    
-    <!-- REGION SEARCH SECTION -->
-    <div class="search-section">
-      <div class="section-label"><i class="fas fa-map-marker-alt"></i> Filter by REGION</div>
-      <div class="custom-dropdown" id="regionDropdownContainer">
-        <i class="fas fa-search dropdown-icon"></i>
-        <input type="text" id="regionSearchInput" class="dropdown-input" placeholder="Search regions..." autocomplete="off">
-        <i class="fas fa-chevron-down dropdown-arrow"></i>
-        <div id="regionDropdownMenu" class="dropdown-menu"></div>
-      </div>
-    </div>
-    <div class="selected-items-container" id="selectedRegionsContainer">
-      <span style="color:#8ba0ae;font-size:0.7rem;">No region selected</span>
-    </div>
-    
-    <!-- DEPARTMENT SEARCH SECTION (NEW) -->
-    <div class="search-section">
-      <div class="section-label"><i class="fas fa-building"></i> Filter by DEPARTMENT</div>
-      <div class="custom-dropdown" id="deptDropdownContainer">
-        <i class="fas fa-search dropdown-icon"></i>
-        <input type="text" id="deptSearchInput" class="dropdown-input" placeholder="Search departments..." autocomplete="off">
-        <i class="fas fa-chevron-down dropdown-arrow"></i>
-        <div id="deptDropdownMenu" class="dropdown-menu"></div>
-      </div>
-    </div>
-    <div class="selected-items-container" id="selectedDeptsContainer">
-      <span style="color:#8ba0ae;font-size:0.7rem;">No department selected</span>
+    <div class="map-wrapper">
+      <div id="map"></div>
+      <div id="mapLoadingOverlay" class="map-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
     </div>
   </div>
-  <div class="map-wrapper">
-    <div id="map"></div>
-    <div id="mapLoadingOverlay" class="map-loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
-  </div>
-</div>
 
-<div id="legendContainer" class="legend-container" style="display: none;">
-  <div class="legend-title">
-    <i class="fas fa-tag"></i> REGIONS LEGEND
-    <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto; cursor: pointer;" id="legendToggleBtn"></i>
-  </div>
-  <div id="legendItems" class="legend-items"></div>
-</div>
-
-<script>
-  // ======================== HELPER FUNCTIONS ========================
-  function convertDriveLinkToDirectUrl(driveUrl) {
-    if (!driveUrl) return null;
-    if (driveUrl.includes('googleusercontent.com') || driveUrl.includes('.png') || driveUrl.includes('.jpg')) return driveUrl;
-    let fileId = null;
-    let match = driveUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (match) fileId = match[1];
-    if (!fileId) match = driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (match) fileId = match[1];
-    if (!fileId) match = driveUrl.match(/id=([a-zA-Z0-9_-]+)/);
-    if (match) fileId = match[1];
-    if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}=w32-h32-p-k-no-nd`;
-    return driveUrl;
-  }
-
-  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxMAvv3bo7irTMVzvkXMVoS0dFjHvMGqnJJhQG3HIkPEONdevNdPbxFDiHMEF9bGl-VxEeqLdxFFj8/pub?output=csv";
-  let logoMap = new Map();
-  
-  function parseCSVLine(line) {
-    const result = [];
-    let inQuote = false;
-    let current = "";
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') inQuote = !inQuote;
-      else if (ch === ',' && !inQuote) { result.push(current); current = ""; }
-      else current += ch;
-    }
-    result.push(current);
-    return result.map(cell => cell.replace(/^"|"$/g, ''));
-  }
-  
-  async function loadLogoMapping() {
-    try {
-      console.log("📥 Fetching logos...");
-      const response = await fetch(sheetUrl);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const csvText = await response.text();
-      const lines = csvText.split(/\r?\n/);
-      if (lines.length < 2) throw new Error("No data");
-      
-      const headers = parseCSVLine(lines[0]);
-      const logoColIndex = headers.findIndex(h => h.toUpperCase().includes('LOGO'));
-      const regionColIndex = headers.findIndex(h => h.toUpperCase().includes('REGION'));
-      
-      for (let i = 1; i < lines.length; i++) {
-        if (lines[i].trim() === "") continue;
-        const cells = parseCSVLine(lines[i]);
-        if (cells.length < 2) continue;
-        
-        let logoUrl = cells[logoColIndex >= 0 ? logoColIndex : 0];
-        let regionName = cells[regionColIndex >= 0 ? regionColIndex : 1];
-        
-        regionName = regionName.trim().toUpperCase();
-        logoUrl = logoUrl.trim();
-        
-        if (!regionName || !logoUrl || regionName === "" || logoUrl === "") continue;
-        if (logoUrl === "LOGO_URL" || regionName === "CLI_REGION") continue;
-        
-        const directUrl = convertDriveLinkToDirectUrl(logoUrl);
-        logoMap.set(regionName, directUrl || logoUrl);
-      }
-      console.log(`✅ Loaded ${logoMap.size} logos`);
-      return true;
-    } catch (error) {
-      console.error("❌ Error:", error);
-      return false;
-    }
-  }
-  
-  function getLogoUrlForRegion(regionName) {
-    if (!regionName) return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    const key = regionName.trim().toUpperCase();
-    if (logoMap.has(key)) return logoMap.get(key);
-    const firstWord = key.split(' ')[0];
-    if (firstWord && logoMap.has(firstWord)) return logoMap.get(firstWord);
-    for (let [storedKey, url] of logoMap.entries()) {
-      if (key.includes(storedKey) || storedKey.includes(key)) return url;
-    }
-    return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-  }
-  
-  function getRegionColor(regionName) {
-    if (!regionName) return "#A8D8EA";
-    const colorMap = {
-      "Auvergne-Rhône-Alpes": "#E74C3C",
-      "Bourgogne-Franche-Comté": "#E67E22",
-      "Bretagne": "#F1C40F",
-      "Bruxelles": "#2ECC71",
-      "Centre-Val de Loire": "#3498DB",
-      "Corse": "#9B59B6",
-      "Diekirch": "#8B4513",
-      "Grand Est": "#FF69B4",
-      "Grevenmacher": "#FF7F50",
-      "Hauts-de-France": "#1ABC9C",
-      "Île-de-France": "#2C3E50",
-      "Luxembourg": "#E8DAEF",
-      "Normandie": "#D35400",
-      "Nouvelle-Aquitaine": "#C0392B",
-      "Occitanie": "#F39C12",
-      "Pays de la Loire": "#1ABC9C",
-      "Provence-Alpes-Côte d'Azur": "#87CEEB",
-      "Switzerland": "#7F8C8D",
-      "Vlaanderen": "#E67E22",
-      "Wallonie": "#27AE60"
-    };
-    return colorMap[regionName] || "#A8D8EA";
-  }
-  
-  function styleRegion(feature) {
-    let regionName = feature.properties?.NAME_1 || "";
-    const fillColor = getRegionColor(regionName);
-    return {
-      fillColor: fillColor,
-      weight: 1.2,
-      opacity: 0.8,
-      color: "#ffffff",
-      fillOpacity: 50,
-      dashArray: null
-    };
-  }
-  
-  function highlightFeature(e) {
-    const layer = e.target;
-    if (!layer.feature) return;
-    layer.setStyle({ weight: 2.5, color: "#333", fillOpacity: 0.85 });
-    if (!L.Browser.ie && !L.Browser.opera) layer.bringToFront();
-    const regionName = layer.feature.properties?.NAME_1 || "Unknown Region";
-    layer.bindTooltip(regionName, { sticky: true }).openTooltip();
-  }
-  
-  function resetHighlight(e) {
-    const layer = e.target;
-    layer.setStyle(styleRegion(layer.feature));
-    layer.closeTooltip();
-  }
-  
-  function onRegionClick(e) {
-    const props = e.target.feature.properties;
-    const regionName = props?.NAME_1 || "Region";
-    if (e.target.getBounds) map.fitBounds(e.target.getBounds(), { padding: [30, 30] });
-  }
-  
-  // ======================== MAIN MAP LOGIC ========================
-  const map = L.map('map').setView([46.8, 3.5], 6);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(map);
-  
-  let currentClusterGroup = null;
-  let allStoresFeatures = [];
-  let regionMapData = new Map();      // region -> {count, features[]}
-  let deptMapData = new Map();        // department -> {count, features[]}
-  let selectedRegions = new Set();
-  let selectedDepts = new Set();
-  let selectedCountry = null;
-  let isUpdating = false;
-  let geoJsonLayer = null;
-  let storesVisible = true;
-  
-  const DEFAULT_VIEW = { lat: 46.8, lng: 3.5, zoom: 6 };
-  
-  function resetToDefaultView() { map.setView([DEFAULT_VIEW.lat, DEFAULT_VIEW.lng], DEFAULT_VIEW.zoom); }
-  function showLoading() { document.getElementById('mapLoadingOverlay').style.display = 'block'; }
-  function hideLoading() { document.getElementById('mapLoadingOverlay').style.display = 'none'; }
-  
-  function getMarkerColor(countryCode) {
-    const colors = { 'FR': '#d9534f', 'CH': '#3b82f6', 'BE': '#20b2aa', 'LU': '#aa6dc9' };
-    return colors[countryCode] || '#6c757d';
-  }
-  
-  function getCountryFullName(code) {
-    const countryMap = { 'BE': 'Belgium', 'CH': 'Switzerland', 'FR': 'France', 'LU': 'Luxembourg' };
-    return countryMap[code] || code || '—';
-  }
-  
-  function getFilteredStores() {
-    let filtered = allStoresFeatures;
-    if (selectedCountry !== null) {
-      filtered = filtered.filter(f => f.properties?.CLI_CODE_P === selectedCountry);
-    }
-    if (selectedRegions.size > 0) {
-      filtered = filtered.filter(f => {
-        let region = f.properties?.CLI_REGION?.trim();
-        return region && selectedRegions.has(region);
-      });
-    }
-    if (selectedDepts.size > 0) {
-      filtered = filtered.filter(f => {
-        let dept = f.properties?.CLI_DEP_FR?.trim();
-        return dept && selectedDepts.has(dept);
-      });
-    }
-    return filtered;
-  }
-  
-  function zoomToSelectedFilters() {
-    const points = [];
-    if (selectedRegions.size > 0) {
-      selectedRegions.forEach(region => {
-        const regionData = regionMapData.get(region);
-        if (regionData && regionData.bounds) {
-          regionData.bounds.forEach(coord => points.push(coord));
-        }
-      });
-    } else if (selectedDepts.size > 0) {
-      selectedDepts.forEach(dept => {
-        const deptData = deptMapData.get(dept);
-        if (deptData && deptData.bounds) {
-          deptData.bounds.forEach(coord => points.push(coord));
-        }
-      });
-    }
-    if (points.length > 0) {
-      const bounds = L.latLngBounds(points);
-      map.fitBounds(bounds, { padding: [50, 50] });
-    } else if (selectedCountry !== null) {
-      const countryBtn = document.querySelector(`.btn-country[data-country="${selectedCountry}"]`);
-      if (countryBtn) {
-        map.setView([parseFloat(countryBtn.dataset.lat), parseFloat(countryBtn.dataset.lng)], parseInt(countryBtn.dataset.zoom));
-      }
-    } else {
-      resetToDefaultView();
-    }
-  }
-  
-  function getClusterLogo(cluster) {
-    const markers = cluster.getAllChildMarkers();
-    if (!markers.length) return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    const logoCount = new Map();
-    markers.forEach(marker => {
-      const markerElement = marker.options.icon?.options?.html;
-      let logo = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-      if (markerElement) {
-        const match = markerElement.match(/src="([^"]+)"/);
-        if (match) logo = match[1];
-      }
-      logoCount.set(logo, (logoCount.get(logo) || 0) + 1);
-    });
-    let maxCount = 0;
-    let mostCommonLogo = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    for (let [logo, count] of logoCount) {
-      if (count > maxCount) { maxCount = count; mostCommonLogo = logo; }
-    }
-    return mostCommonLogo;
-  }
-  
-  function createClusterMarker(cluster) {
-    const clusterLogo = getClusterLogo(cluster);
-    return L.divIcon({
-      html: `<div class="cluster-marker"><img src="${clusterLogo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>`,
-      className: 'cluster-div-marker',
-      iconSize: [40, 40]
-    });
-  }
-  
-  function createLogoMarker(feature, latlng) {
-    const props = feature.properties;
-    const region = props.CLI_REGION || 'Store';
-    const logoUrl = getLogoUrlForRegion(region);
-    const countryCode = props.CLI_CODE_P || 'FR';
-    const borderColor = getMarkerColor(countryCode);
-    
-    const markerHtml = `<div class="custom-marker-logo" style="border-color: ${borderColor};"><img src="${logoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>`;
-    const icon = L.divIcon({ html: markerHtml, className: 'custom-div-marker', iconSize: [32, 32], popupAnchor: [0, -16] });
-    const marker = L.marker(latlng, { icon: icon });
-    
-    const popupLogoUrl = getLogoUrlForRegion(region);
-    const popupHtml = `
-  <div class="popup-store-card">
-    <div class="popup-logo"><img src="${popupLogoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>
-    <div class="popup-info">
-      <h4><i class="fas fa-store"></i> ${props.CLI_RAISON || 'Store'}</h4>
-      <p><i class="fas fa-building"></i> <strong>Department:</strong> ${props.CLI_DEP_FR || '—'}</p>
-      <p><i class="fas fa-user-tie"></i> <strong>Sales Rep:</strong> ${props.CLI_CODE_V || '—'}</p>
-      <p><i class="fas fa-map-pin"></i> <strong>Region:</strong> ${region}</p>
-      <p><i class="fas fa-city"></i> <strong>City:</strong> ${props.CLI_VILLE || '—'}</p>
-      <p><i class="fas fa-flag"></i> <strong>Country:</strong> ${getCountryFullName(props.CLI_CODE_P)}</p>
-      <p><i class="fas fa-location-dot"></i> <strong>Address:</strong> ${props.Address || props.CLI_ADRESSE || '—'}</p>
+  <div id="legendContainer" class="legend-container" style="display: none;">
+    <div class="legend-title">
+      <i class="fas fa-tag"></i> REGIONS LEGEND
+      <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: auto; cursor: pointer;"
+        id="legendToggleBtn"></i>
     </div>
-  </div>`;
-    marker.bindPopup(popupHtml, { maxWidth: 320, minWidth: 260 });
-    return marker;
-  }
-  
-  function buildIndices(features) {
-    regionMapData.clear();
-    deptMapData.clear();
-    features.forEach(feature => {
-      let region = feature.properties?.CLI_REGION?.trim();
-      if (!region || region === "") region = "Unspecified Region";
-      if (!regionMapData.has(region)) {
-        regionMapData.set(region, { count: 0, features: [], bounds: [] });
+    <div id="legendItems" class="legend-items"></div>
+  </div>
+
+  <script>
+    // ======================== HELPER FUNCTIONS ========================
+    function convertDriveLinkToDirectUrl(driveUrl) {
+      if (!driveUrl) return null;
+      if (driveUrl.includes('googleusercontent.com') || driveUrl.includes('.png') || driveUrl.includes('.jpg')) return driveUrl;
+      let fileId = null;
+      let match = driveUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) fileId = match[1];
+      if (!fileId) match = driveUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) fileId = match[1];
+      if (!fileId) match = driveUrl.match(/id=([a-zA-Z0-9_-]+)/);
+      if (match) fileId = match[1];
+      if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}=w32-h32-p-k-no-nd`;
+      return driveUrl;
+    }
+
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxMAvv3bo7irTMVzvkXMVoS0dFjHvMGqnJJhQG3HIkPEONdevNdPbxFDiHMEF9bGl-VxEeqLdxFFj8/pub?output=csv";
+    let logoMap = new Map();
+
+    function parseCSVLine(line) {
+      const result = [];
+      let inQuote = false;
+      let current = "";
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') inQuote = !inQuote;
+        else if (ch === ',' && !inQuote) { result.push(current); current = ""; }
+        else current += ch;
       }
-      const rEntry = regionMapData.get(region);
-      rEntry.count += 1;
-      rEntry.features.push(feature);
-      const coords = feature.geometry?.coordinates;
-      if (coords && coords.length >= 2) rEntry.bounds.push([coords[1], coords[0]]);
-      
-      let dept = feature.properties?.CLI_DEP_FR?.trim();
-      if (dept && dept !== "") {
-        if (!deptMapData.has(dept)) {
-          deptMapData.set(dept, { count: 0, features: [], bounds: [] });
-        }
-        const dEntry = deptMapData.get(dept);
-        dEntry.count += 1;
-        dEntry.features.push(feature);
-        if (coords && coords.length >= 2) dEntry.bounds.push([coords[1], coords[0]]);
-      }
-    });
-    console.log("Indices built - Regions:", regionMapData.size, "Depts:", deptMapData.size);
-  }
-  
-  function updateMapMarkers() {
-    if (isUpdating) return;
-    isUpdating = true;
-    showLoading();
-    setTimeout(() => {
+      result.push(current);
+      return result.map(cell => cell.replace(/^"|"$/g, ''));
+    }
+
+    async function loadLogoMapping() {
       try {
-        if (currentClusterGroup) map.removeLayer(currentClusterGroup);
-        if (storesVisible) {
-          currentClusterGroup = L.markerClusterGroup({
-            maxClusterRadius: 30,
-            iconCreateFunction: createClusterMarker,
-            spiderfyOnMaxZoom: true,
-            showCoverageOnHover: false,
-            zoomToBoundsOnClick: true
-          });
-          const featuresToShow = getFilteredStores();
-          console.log("Showing features:", featuresToShow.length);
-          featuresToShow.forEach(feature => {
-            const coords = feature.geometry?.coordinates;
-            if (coords && coords.length >= 2) {
-              currentClusterGroup.addLayer(createLogoMarker(feature, [coords[1], coords[0]]));
-            }
-          });
-          map.addLayer(currentClusterGroup);
-        } else {
-          currentClusterGroup = null;
+        console.log("📥 Fetching logos...");
+        const response = await fetch(sheetUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const csvText = await response.text();
+        const lines = csvText.split(/\r?\n/);
+        if (lines.length < 2) throw new Error("No data");
+
+        const headers = parseCSVLine(lines[0]);
+        const logoColIndex = headers.findIndex(h => h.toUpperCase().includes('LOGO'));
+        const regionColIndex = headers.findIndex(h => h.toUpperCase().includes('REGION'));
+
+        for (let i = 1; i < lines.length; i++) {
+          if (lines[i].trim() === "") continue;
+          const cells = parseCSVLine(lines[i]);
+          if (cells.length < 2) continue;
+
+          let logoUrl = cells[logoColIndex >= 0 ? logoColIndex : 0];
+          let regionName = cells[regionColIndex >= 0 ? regionColIndex : 1];
+
+          regionName = regionName.trim().toUpperCase();
+          logoUrl = logoUrl.trim();
+
+          if (!regionName || !logoUrl || regionName === "" || logoUrl === "") continue;
+          if (logoUrl === "LOGO_URL" || regionName === "CLI_REGION") continue;
+
+          const directUrl = convertDriveLinkToDirectUrl(logoUrl);
+          logoMap.set(regionName, directUrl || logoUrl);
         }
-        hideLoading();
-        updateStatsDisplay();
-      } catch(e) { console.warn(e); hideLoading(); } finally { isUpdating = false; }
-    }, 50);
-  }
-  
-  function filterByCountry(countryCode, lat, lng, zoom) {
-    if (selectedCountry === countryCode) {
-      selectedCountry = null;
-      document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
-    } else {
-      selectedCountry = countryCode;
-      document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.querySelector(`.btn-country[data-country="${countryCode}"]`);
-      if (activeBtn) activeBtn.classList.add('active');
+        console.log(`✅ Loaded ${logoMap.size} logos`);
+        return true;
+      } catch (error) {
+        console.error("❌ Error:", error);
+        return false;
+      }
     }
-    updateMapMarkers();
-    renderRegionDropdown(document.getElementById('regionSearchInput').value);
-    renderDeptDropdown(document.getElementById('deptSearchInput').value);
-    map.setView([parseFloat(lat), parseFloat(lng)], parseInt(zoom));
-  }
-  
-  function toggleStores() {
-    storesVisible = !storesVisible;
-    const toggleBtn = document.getElementById('toggleStoresBtn');
-    if (storesVisible) {
-      toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Stores';
-      toggleBtn.classList.remove('off');
-    } else {
-      toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Stores';
-      toggleBtn.classList.add('off');
+
+    function getLogoUrlForRegion(regionName) {
+      if (!regionName) return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+      const key = regionName.trim().toUpperCase();
+      if (logoMap.has(key)) return logoMap.get(key);
+      const firstWord = key.split(' ')[0];
+      if (firstWord && logoMap.has(firstWord)) return logoMap.get(firstWord);
+      for (let [storedKey, url] of logoMap.entries()) {
+        if (key.includes(storedKey) || storedKey.includes(key)) return url;
+      }
+      return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
     }
-    updateMapMarkers();
-  }
-  
-  function updateStatsDisplay() {
-    const totalElem = document.getElementById('totalStoresBig');
-    const filtered = getFilteredStores();
-    totalElem.innerText = filtered.length;
-  }
-  
-  // REGION DROPDOWN
-  function renderRegionDropdown(searchVal = "") {
-    const menu = document.getElementById('regionDropdownMenu');
-    if (!menu) return;
-    const term = searchVal.toLowerCase().trim();
-    let filteredStores = getFilteredStores();
-    let tempMap = new Map();
-    filteredStores.forEach(f => {
-      let r = f.properties?.CLI_REGION?.trim();
-      if (r && r !== "Unspecified Region") tempMap.set(r, (tempMap.get(r) || 0) + 1);
-    });
-    let regions = Array.from(tempMap.keys());
-    if (term) regions = regions.filter(r => r.toLowerCase().includes(term));
-    regions.sort();
-    if (!regions.length) { menu.innerHTML = `<div style="padding:12px;text-align:center;">No regions found</div>`; return; }
-    menu.innerHTML = regions.map(r => {
-      const count = tempMap.get(r);
-      const isSelected = selectedRegions.has(r);
-      const logoUrl = getLogoUrlForRegion(r);
-      return `<div class="dropdown-option ${isSelected ? 'selected' : ''}" data-region="${r.replace(/"/g, '&quot;')}">
+
+    function getRegionColor(regionName) {
+      if (!regionName) return "#A8D8EA";
+      const colorMap = {
+        "Auvergne-Rhône-Alpes": "#E74C3C",
+        "Bourgogne-Franche-Comté": "#E67E22",
+        "Bretagne": "#F1C40F",
+        "Bruxelles": "#2ECC71",
+        "Centre-Val de Loire": "#3498DB",
+        "Corse": "#9B59B6",
+        "Diekirch": "#8B4513",
+        "Grand Est": "#FF69B4",
+        "Grevenmacher": "#FF7F50",
+        "Hauts-de-France": "#1ABC9C",
+        "Île-de-France": "#2C3E50",
+        "Luxembourg": "#E8DAEF",
+        "Normandie": "#D35400",
+        "Nouvelle-Aquitaine": "#C0392B",
+        "Occitanie": "#F39C12",
+        "Pays de la Loire": "#1ABC9C",
+        "Provence-Alpes-Côte d'Azur": "#87CEEB",
+        "Switzerland": "#7F8C8D",
+        "Vlaanderen": "#E67E22",
+        "Wallonie": "#27AE60"
+      };
+      return colorMap[regionName] || "#A8D8EA";
+    }
+
+    function styleRegion(feature) {
+      let regionName = feature.properties?.NAME_1 || "";
+      const fillColor = getRegionColor(regionName);
+      return {
+        fillColor: fillColor,
+        weight: 1.2,
+        opacity: 0.8,
+        color: "#ffffff",
+        fillOpacity: 50,
+        dashArray: null
+      };
+    }
+
+    function highlightFeature(e) {
+      const layer = e.target;
+      if (!layer.feature) return;
+      layer.setStyle({ weight: 2.5, color: "#333", fillOpacity: 0.85 });
+      if (!L.Browser.ie && !L.Browser.opera) layer.bringToFront();
+      const regionName = layer.feature.properties?.NAME_1 || "Unknown Region";
+      layer.bindTooltip(regionName, { sticky: true }).openTooltip();
+    }
+
+    function resetHighlight(e) {
+      const layer = e.target;
+      layer.setStyle(styleRegion(layer.feature));
+      layer.closeTooltip();
+    }
+
+    function onRegionClick(e) {
+      const props = e.target.feature.properties;
+      const regionName = props?.NAME_1 || "Region";
+      if (e.target.getBounds) map.fitBounds(e.target.getBounds(), { padding: [30, 30] });
+    }
+
+    // ======================== MAIN MAP LOGIC ========================
+    const map = L.map('map').setView([46.8, 3.5], 6);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+
+    let currentClusterGroup = null;
+    let allStoresFeatures = [];
+    let regionMapData = new Map();      // region -> {count, features[]}
+    let deptMapData = new Map();        // department -> {count, features[]}
+    let selectedRegions = new Set();
+    let selectedDepts = new Set();
+    let selectedCountry = null;
+    let isUpdating = false;
+    let geoJsonLayer = null;
+    let storesVisible = true;
+
+    const DEFAULT_VIEW = { lat: 46.8, lng: 3.5, zoom: 6 };
+
+    function resetToDefaultView() { map.setView([DEFAULT_VIEW.lat, DEFAULT_VIEW.lng], DEFAULT_VIEW.zoom); }
+    function showLoading() { document.getElementById('mapLoadingOverlay').style.display = 'block'; }
+    function hideLoading() { document.getElementById('mapLoadingOverlay').style.display = 'none'; }
+
+    function getMarkerColor(countryCode) {
+      const colors = { 'FR': '#d9534f', 'CH': '#3b82f6', 'BE': '#20b2aa', 'LU': '#aa6dc9' };
+      return colors[countryCode] || '#6c757d';
+    }
+
+    function getCountryFullName(code) {
+      const countryMap = { 'BE': 'Belgium', 'CH': 'Switzerland', 'FR': 'France', 'LU': 'Luxembourg' };
+      return countryMap[code] || code || '—';
+    }
+
+    function getFilteredStores() {
+      let filtered = allStoresFeatures;
+      if (selectedCountry !== null) {
+        filtered = filtered.filter(f => f.properties?.CLI_CODE_P === selectedCountry);
+      }
+      if (selectedRegions.size > 0) {
+        filtered = filtered.filter(f => {
+          let region = f.properties?.CLI_REGION?.trim();
+          return region && selectedRegions.has(region);
+        });
+      }
+      if (selectedDepts.size > 0) {
+        filtered = filtered.filter(f => {
+          let dept = f.properties?.CLI_DEP_FR?.trim();
+          return dept && selectedDepts.has(dept);
+        });
+      }
+      return filtered;
+    }
+
+    function zoomToSelectedFilters() {
+      const points = [];
+      if (selectedRegions.size > 0) {
+        selectedRegions.forEach(region => {
+          const regionData = regionMapData.get(region);
+          if (regionData && regionData.bounds) {
+            regionData.bounds.forEach(coord => points.push(coord));
+          }
+        });
+      } else if (selectedDepts.size > 0) {
+        selectedDepts.forEach(dept => {
+          const deptData = deptMapData.get(dept);
+          if (deptData && deptData.bounds) {
+            deptData.bounds.forEach(coord => points.push(coord));
+          }
+        });
+      }
+      if (points.length > 0) {
+        const bounds = L.latLngBounds(points);
+        map.fitBounds(bounds, { padding: [50, 50] });
+      } else if (selectedCountry !== null) {
+        const countryBtn = document.querySelector(`.btn-country[data-country="${selectedCountry}"]`);
+        if (countryBtn) {
+          map.setView([parseFloat(countryBtn.dataset.lat), parseFloat(countryBtn.dataset.lng)], parseInt(countryBtn.dataset.zoom));
+        }
+      } else {
+        resetToDefaultView();
+      }
+    }
+
+    function getClusterLogo(cluster) {
+      const markers = cluster.getAllChildMarkers();
+      if (!markers.length) return "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+      const logoCount = new Map();
+      markers.forEach(marker => {
+        const markerElement = marker.options.icon?.options?.html;
+        let logo = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        if (markerElement) {
+          const match = markerElement.match(/src="([^"]+)"/);
+          if (match) logo = match[1];
+        }
+        logoCount.set(logo, (logoCount.get(logo) || 0) + 1);
+      });
+      let maxCount = 0;
+      let mostCommonLogo = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+      for (let [logo, count] of logoCount) {
+        if (count > maxCount) { maxCount = count; mostCommonLogo = logo; }
+      }
+      return mostCommonLogo;
+    }
+
+    function createClusterMarker(cluster) {
+      const clusterLogo = getClusterLogo(cluster);
+      return L.divIcon({
+        html: `<div class="cluster-marker"><img src="${clusterLogo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>`,
+        className: 'cluster-div-marker',
+        iconSize: [40, 40]
+      });
+    }
+
+    function createLogoMarker(feature, latlng) {
+      const props = feature.properties;
+      const region = props.CLI_REGION || 'Store';
+      const department = props.CLI_DEP_FR || '—';
+      const logoUrl = getLogoUrlForRegion(region);
+      const countryCode = props.CLI_CODE_P || 'FR';
+      const borderColor = getMarkerColor(countryCode);
+
+      // Create marker with logo + department label below it
+      const markerHtml = `
+        <div class="custom-marker-container" style="text-align: center;">
+            <div class="custom-marker-logo" style="border-color: ${borderColor}; margin-bottom: 2px;">
+                <img src="${logoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
+            </div>
+            <div class="marker-label" style="
+                background: rgba(0,0,0,0.75);
+                color: white;
+                font-size: 9px;
+                padding: 2px 5px;
+                border-radius: 10px;
+                white-space: nowrap;
+                font-weight: 500;
+                max-width: 80px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                backdrop-filter: blur(2px);
+            ">
+                ${department.length > 12 ? department.slice(0, 10) + '…' : department}
+            </div>
+        </div>
+    `;
+
+      const icon = L.divIcon({
+        html: markerHtml,
+        className: 'custom-div-marker',
+        iconSize: [50, 50],  // Increased size to accommodate label
+        popupAnchor: [0, -25]  // Adjust popup position
+      });
+
+      const marker = L.marker(latlng, { icon: icon });
+
+      const popupLogoUrl = getLogoUrlForRegion(region);
+      const popupHtml = `
+        <div class="popup-store-card">
+            <div class="popup-logo"><img src="${popupLogoUrl}" alt="${region}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"></div>
+            <div class="popup-info">
+                <h4><i class="fas fa-store"></i> ${props.CLI_RAISON || 'Store'}</h4>
+                <p><i class="fas fa-building"></i> <strong>Department:</strong> ${props.CLI_DEP_FR || '—'}</p>
+                <p><i class="fas fa-user-tie"></i> <strong>Sales Rep:</strong> ${props.CLI_CODE_V || '—'}</p>
+                <p><i class="fas fa-map-pin"></i> <strong>Region:</strong> ${region}</p>
+                <p><i class="fas fa-city"></i> <strong>City:</strong> ${props.CLI_VILLE || '—'}</p>
+                <p><i class="fas fa-flag"></i> <strong>Country:</strong> ${getCountryFullName(props.CLI_CODE_P)}</p>
+                <p><i class="fas fa-location-dot"></i> <strong>Address:</strong> ${props.Address || props.CLI_ADRESSE || '—'}</p>
+            </div>
+        </div>`;
+      marker.bindPopup(popupHtml, { maxWidth: 320, minWidth: 260 });
+      return marker;
+    }
+
+    function buildIndices(features) {
+      regionMapData.clear();
+      deptMapData.clear();
+      features.forEach(feature => {
+        let region = feature.properties?.CLI_REGION?.trim();
+        if (!region || region === "") region = "Unspecified Region";
+        if (!regionMapData.has(region)) {
+          regionMapData.set(region, { count: 0, features: [], bounds: [] });
+        }
+        const rEntry = regionMapData.get(region);
+        rEntry.count += 1;
+        rEntry.features.push(feature);
+        const coords = feature.geometry?.coordinates;
+        if (coords && coords.length >= 2) rEntry.bounds.push([coords[1], coords[0]]);
+
+        let dept = feature.properties?.CLI_DEP_FR?.trim();
+        if (dept && dept !== "") {
+          if (!deptMapData.has(dept)) {
+            deptMapData.set(dept, { count: 0, features: [], bounds: [] });
+          }
+          const dEntry = deptMapData.get(dept);
+          dEntry.count += 1;
+          dEntry.features.push(feature);
+          if (coords && coords.length >= 2) dEntry.bounds.push([coords[1], coords[0]]);
+        }
+      });
+      console.log("Indices built - Regions:", regionMapData.size, "Depts:", deptMapData.size);
+    }
+
+    function updateMapMarkers() {
+      if (isUpdating) return;
+      isUpdating = true;
+      showLoading();
+      setTimeout(() => {
+        try {
+          if (currentClusterGroup) map.removeLayer(currentClusterGroup);
+          if (storesVisible) {
+            currentClusterGroup = L.markerClusterGroup({
+              maxClusterRadius: 30,
+              iconCreateFunction: createClusterMarker,
+              spiderfyOnMaxZoom: true,
+              showCoverageOnHover: false,
+              zoomToBoundsOnClick: true
+            });
+            const featuresToShow = getFilteredStores();
+            console.log("Showing features:", featuresToShow.length);
+            featuresToShow.forEach(feature => {
+              const coords = feature.geometry?.coordinates;
+              if (coords && coords.length >= 2) {
+                currentClusterGroup.addLayer(createLogoMarker(feature, [coords[1], coords[0]]));
+              }
+            });
+            map.addLayer(currentClusterGroup);
+          } else {
+            currentClusterGroup = null;
+          }
+          hideLoading();
+          updateStatsDisplay();
+        } catch (e) { console.warn(e); hideLoading(); } finally { isUpdating = false; }
+      }, 50);
+    }
+
+    function filterByCountry(countryCode, lat, lng, zoom) {
+      if (selectedCountry === countryCode) {
+        selectedCountry = null;
+        document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
+      } else {
+        selectedCountry = countryCode;
+        document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.querySelector(`.btn-country[data-country="${countryCode}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+      }
+      updateMapMarkers();
+      renderRegionDropdown(document.getElementById('regionSearchInput').value);
+      renderDeptDropdown(document.getElementById('deptSearchInput').value);
+      map.setView([parseFloat(lat), parseFloat(lng)], parseInt(zoom));
+    }
+
+    function toggleStores() {
+      storesVisible = !storesVisible;
+      const toggleBtn = document.getElementById('toggleStoresBtn');
+      if (storesVisible) {
+        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Stores';
+        toggleBtn.classList.remove('off');
+      } else {
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Stores';
+        toggleBtn.classList.add('off');
+      }
+      updateMapMarkers();
+    }
+
+    function updateStatsDisplay() {
+      const totalElem = document.getElementById('totalStoresBig');
+      const filtered = getFilteredStores();
+      totalElem.innerText = filtered.length;
+    }
+
+    // REGION DROPDOWN
+    function renderRegionDropdown(searchVal = "") {
+      const menu = document.getElementById('regionDropdownMenu');
+      if (!menu) return;
+      const term = searchVal.toLowerCase().trim();
+      let filteredStores = getFilteredStores();
+      let tempMap = new Map();
+      filteredStores.forEach(f => {
+        let r = f.properties?.CLI_REGION?.trim();
+        if (r && r !== "Unspecified Region") tempMap.set(r, (tempMap.get(r) || 0) + 1);
+      });
+      let regions = Array.from(tempMap.keys());
+      if (term) regions = regions.filter(r => r.toLowerCase().includes(term));
+      regions.sort();
+      if (!regions.length) { menu.innerHTML = `<div style="padding:12px;text-align:center;">No regions found</div>`; return; }
+      menu.innerHTML = regions.map(r => {
+        const count = tempMap.get(r);
+        const isSelected = selectedRegions.has(r);
+        const logoUrl = getLogoUrlForRegion(r);
+        return `<div class="dropdown-option ${isSelected ? 'selected' : ''}" data-region="${r.replace(/"/g, '&quot;')}">
         <div class="option-left"><div class="checkbox-multi"></div><img src="${logoUrl}" class="option-logo" onerror="this.style.display='none'"><span>${r}</span></div>
         <span class="badge-count">${count}</span>
       </div>`;
-    }).join('');
-    document.querySelectorAll('#regionDropdownMenu .dropdown-option').forEach(opt => {
-      opt.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const regionName = opt.getAttribute('data-region');
-        if (regionName) {
-          if (selectedRegions.has(regionName)) selectedRegions.delete(regionName);
-          else selectedRegions.add(regionName);
-          updateSelectedRegionsTags();
-          updateMapMarkers();
-          renderRegionDropdown(document.getElementById('regionSearchInput').value);
-          updateStatsDisplay();
-          zoomToSelectedFilters();
-          updateLegend();
-        }
+      }).join('');
+      document.querySelectorAll('#regionDropdownMenu .dropdown-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const regionName = opt.getAttribute('data-region');
+          if (regionName) {
+            if (selectedRegions.has(regionName)) selectedRegions.delete(regionName);
+            else selectedRegions.add(regionName);
+            updateSelectedRegionsTags();
+            updateMapMarkers();
+            renderRegionDropdown(document.getElementById('regionSearchInput').value);
+            updateStatsDisplay();
+            zoomToSelectedFilters();
+            updateLegend();
+          }
+        });
       });
-    });
-  }
-  
-  function updateSelectedRegionsTags() {
-    const container = document.getElementById('selectedRegionsContainer');
-    if (!container) return;
-    if (selectedRegions.size === 0) { 
-      container.innerHTML = '<span style="color:#8ba0ae;font-size:0.7rem;">No region selected</span>'; 
-      return; 
     }
-    container.innerHTML = Array.from(selectedRegions).map(region => {
-      const cnt = regionMapData.get(region)?.count || 0;
-      const logoUrl = getLogoUrlForRegion(region);
-      const regionColor = getRegionColor(region);
-      return `<div class="filter-tag" data-region="${region.replace(/"/g, '&quot;')}" style="background-color: ${regionColor};">
+
+    function updateSelectedRegionsTags() {
+      const container = document.getElementById('selectedRegionsContainer');
+      if (!container) return;
+      if (selectedRegions.size === 0) {
+        container.innerHTML = '<span style="color:#8ba0ae;font-size:0.7rem;">No region selected</span>';
+        return;
+      }
+      container.innerHTML = Array.from(selectedRegions).map(region => {
+        const cnt = regionMapData.get(region)?.count || 0;
+        const logoUrl = getLogoUrlForRegion(region);
+        const regionColor = getRegionColor(region);
+        return `<div class="filter-tag" data-region="${region.replace(/"/g, '&quot;')}" style="background-color: ${regionColor};">
         <img src="${logoUrl}" style="width:14px;height:14px;object-fit:contain;border-radius:2px;" onerror="this.style.display='none'">
-        ${region.length>20?region.slice(0,17)+'…':region} (${cnt})
+        ${region.length > 20 ? region.slice(0, 17) + '…' : region} (${cnt})
         <i class="fas fa-times-circle"></i>
       </div>`;
-    }).join('');
-    document.querySelectorAll('.filter-tag[data-region]').forEach(tag => {
-      tag.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const regionName = tag.getAttribute('data-region');
-        if (regionName) { selectedRegions.delete(regionName); updateSelectedRegionsTags(); updateMapMarkers(); renderRegionDropdown(document.getElementById('regionSearchInput').value); updateStatsDisplay(); zoomToSelectedFilters(); updateLegend(); }
+      }).join('');
+      document.querySelectorAll('.filter-tag[data-region]').forEach(tag => {
+        tag.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const regionName = tag.getAttribute('data-region');
+          if (regionName) { selectedRegions.delete(regionName); updateSelectedRegionsTags(); updateMapMarkers(); renderRegionDropdown(document.getElementById('regionSearchInput').value); updateStatsDisplay(); zoomToSelectedFilters(); updateLegend(); }
+        });
       });
-    });
-  }
-  
-  // DEPARTMENT DROPDOWN
-  function renderDeptDropdown(searchVal = "") {
-    const menu = document.getElementById('deptDropdownMenu');
-    if (!menu) return;
-    const term = searchVal.toLowerCase().trim();
-    let filteredStores = getFilteredStores();
-    let tempMap = new Map();
-    filteredStores.forEach(f => {
-      let d = f.properties?.CLI_DEP_FR?.trim();
-      if (d && d !== "") tempMap.set(d, (tempMap.get(d) || 0) + 1);
-    });
-    let depts = Array.from(tempMap.keys());
-    if (term) depts = depts.filter(d => d.toLowerCase().includes(term));
-    depts.sort();
-    if (!depts.length) { menu.innerHTML = `<div style="padding:12px;text-align:center;">No departments found</div>`; return; }
-    menu.innerHTML = depts.map(d => {
-      const count = tempMap.get(d);
-      const isSelected = selectedDepts.has(d);
-      return `<div class="dropdown-option ${isSelected ? 'selected' : ''}" data-dept="${d.replace(/"/g, '&quot;')}">
+    }
+
+    // DEPARTMENT DROPDOWN
+    function renderDeptDropdown(searchVal = "") {
+      const menu = document.getElementById('deptDropdownMenu');
+      if (!menu) return;
+      const term = searchVal.toLowerCase().trim();
+      let filteredStores = getFilteredStores();
+      let tempMap = new Map();
+      filteredStores.forEach(f => {
+        let d = f.properties?.CLI_DEP_FR?.trim();
+        if (d && d !== "") tempMap.set(d, (tempMap.get(d) || 0) + 1);
+      });
+      let depts = Array.from(tempMap.keys());
+      if (term) depts = depts.filter(d => d.toLowerCase().includes(term));
+      depts.sort();
+      if (!depts.length) { menu.innerHTML = `<div style="padding:12px;text-align:center;">No departments found</div>`; return; }
+      menu.innerHTML = depts.map(d => {
+        const count = tempMap.get(d);
+        const isSelected = selectedDepts.has(d);
+        return `<div class="dropdown-option ${isSelected ? 'selected' : ''}" data-dept="${d.replace(/"/g, '&quot;')}">
         <div class="option-left"><div class="checkbox-multi"></div><span>${d}</span></div>
         <span class="badge-count">${count}</span>
       </div>`;
-    }).join('');
-    document.querySelectorAll('#deptDropdownMenu .dropdown-option').forEach(opt => {
-      opt.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const deptName = opt.getAttribute('data-dept');
-        if (deptName) {
-          if (selectedDepts.has(deptName)) selectedDepts.delete(deptName);
-          else selectedDepts.add(deptName);
-          updateSelectedDeptsTags();
-          updateMapMarkers();
-          renderDeptDropdown(document.getElementById('deptSearchInput').value);
-          updateStatsDisplay();
-          zoomToSelectedFilters();
-        }
+      }).join('');
+      document.querySelectorAll('#deptDropdownMenu .dropdown-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const deptName = opt.getAttribute('data-dept');
+          if (deptName) {
+            if (selectedDepts.has(deptName)) selectedDepts.delete(deptName);
+            else selectedDepts.add(deptName);
+            updateSelectedDeptsTags();
+            updateMapMarkers();
+            renderDeptDropdown(document.getElementById('deptSearchInput').value);
+            updateStatsDisplay();
+            zoomToSelectedFilters();
+          }
+        });
       });
-    });
-  }
-  
-  function updateSelectedDeptsTags() {
-    const container = document.getElementById('selectedDeptsContainer');
-    if (!container) return;
-    if (selectedDepts.size === 0) { 
-      container.innerHTML = '<span style="color:#8ba0ae;font-size:0.7rem;">No department selected</span>'; 
-      return; 
     }
-    container.innerHTML = Array.from(selectedDepts).map(dept => {
-      const cnt = deptMapData.get(dept)?.count || 0;
-      return `<div class="filter-tag" data-dept="${dept.replace(/"/g, '&quot;')}" style="background-color: #3498DB;">
+
+    function updateSelectedDeptsTags() {
+      const container = document.getElementById('selectedDeptsContainer');
+      if (!container) return;
+      if (selectedDepts.size === 0) {
+        container.innerHTML = '<span style="color:#8ba0ae;font-size:0.7rem;">No department selected</span>';
+        return;
+      }
+      container.innerHTML = Array.from(selectedDepts).map(dept => {
+        const cnt = deptMapData.get(dept)?.count || 0;
+        return `<div class="filter-tag" data-dept="${dept.replace(/"/g, '&quot;')}" style="background-color: #3498DB;">
         <i class="fas fa-building" style="font-size:10px;"></i>
-        ${dept.length>20?dept.slice(0,17)+'…':dept} (${cnt})
+        ${dept.length > 20 ? dept.slice(0, 17) + '…' : dept} (${cnt})
         <i class="fas fa-times-circle"></i>
       </div>`;
-    }).join('');
-    document.querySelectorAll('.filter-tag[data-dept]').forEach(tag => {
-      tag.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const deptName = tag.getAttribute('data-dept');
-        if (deptName) { selectedDepts.delete(deptName); updateSelectedDeptsTags(); updateMapMarkers(); renderDeptDropdown(document.getElementById('deptSearchInput').value); updateStatsDisplay(); zoomToSelectedFilters(); }
+      }).join('');
+      document.querySelectorAll('.filter-tag[data-dept]').forEach(tag => {
+        tag.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const deptName = tag.getAttribute('data-dept');
+          if (deptName) { selectedDepts.delete(deptName); updateSelectedDeptsTags(); updateMapMarkers(); renderDeptDropdown(document.getElementById('deptSearchInput').value); updateStatsDisplay(); zoomToSelectedFilters(); }
+        });
       });
-    });
-  }
-  
-  function selectAllRegions() {
-    let filteredStores = getFilteredStores();
-    let tempSet = new Set();
-    filteredStores.forEach(f => {
-      let r = f.properties?.CLI_REGION?.trim();
-      if (r && r !== "Unspecified Region") tempSet.add(r);
-    });
-    selectedRegions.clear();
-    tempSet.forEach(r => selectedRegions.add(r));
-    updateSelectedRegionsTags();
-    updateMapMarkers();
-    renderRegionDropdown(document.getElementById('regionSearchInput').value);
-    updateStatsDisplay();
-    updateLegend();
-    setTimeout(() => zoomToSelectedFilters(), 100);
-  }
-  
-  function selectAllDepts() {
-    let filteredStores = getFilteredStores();
-    let tempSet = new Set();
-    filteredStores.forEach(f => {
-      let d = f.properties?.CLI_DEP_FR?.trim();
-      if (d && d !== "") tempSet.add(d);
-    });
-    selectedDepts.clear();
-    tempSet.forEach(d => selectedDepts.add(d));
-    updateSelectedDeptsTags();
-    updateMapMarkers();
-    renderDeptDropdown(document.getElementById('deptSearchInput').value);
-    updateStatsDisplay();
-    setTimeout(() => zoomToSelectedFilters(), 100);
-  }
-  
-  function clearAll() { 
-    selectedRegions.clear(); 
-    selectedDepts.clear(); 
-    selectedCountry = null;
-    document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
-    updateSelectedRegionsTags(); 
-    updateSelectedDeptsTags();
-    updateMapMarkers(); 
-    renderRegionDropdown(''); 
-    renderDeptDropdown('');
-    updateStatsDisplay();
-    updateLegend();
-    resetToDefaultView();
-  }
-  
-  function updateLegend() {
-    const legendContainer = document.getElementById('legendContainer');
-    const legendItemsDiv = document.getElementById('legendItems');
-    let allRegions = Array.from(regionMapData.keys()).filter(r => r !== "Unspecified Region");
-    allRegions.sort();
-    if (allRegions.length === 0) { legendContainer.style.display = 'none'; return; }
-    legendContainer.style.display = 'block';
-    legendItemsDiv.innerHTML = allRegions.map(region => {
-      const regionColor = getRegionColor(region);
-      const logoUrl = getLogoUrlForRegion(region);
-      const isSelected = selectedRegions.has(region);
-      return `<div class="legend-item ${isSelected ? 'highlight' : ''}" data-region="${region.replace(/"/g, '&quot;')}" onclick="selectRegionFromLegend('${region.replace(/'/g, "\\'")}')">
+    }
+
+    function selectAllRegions() {
+      let filteredStores = getFilteredStores();
+      let tempSet = new Set();
+      filteredStores.forEach(f => {
+        let r = f.properties?.CLI_REGION?.trim();
+        if (r && r !== "Unspecified Region") tempSet.add(r);
+      });
+      selectedRegions.clear();
+      tempSet.forEach(r => selectedRegions.add(r));
+      updateSelectedRegionsTags();
+      updateMapMarkers();
+      renderRegionDropdown(document.getElementById('regionSearchInput').value);
+      updateStatsDisplay();
+      updateLegend();
+      setTimeout(() => zoomToSelectedFilters(), 100);
+    }
+
+    function selectAllDepts() {
+      let filteredStores = getFilteredStores();
+      let tempSet = new Set();
+      filteredStores.forEach(f => {
+        let d = f.properties?.CLI_DEP_FR?.trim();
+        if (d && d !== "") tempSet.add(d);
+      });
+      selectedDepts.clear();
+      tempSet.forEach(d => selectedDepts.add(d));
+      updateSelectedDeptsTags();
+      updateMapMarkers();
+      renderDeptDropdown(document.getElementById('deptSearchInput').value);
+      updateStatsDisplay();
+      setTimeout(() => zoomToSelectedFilters(), 100);
+    }
+
+    function clearAll() {
+      selectedRegions.clear();
+      selectedDepts.clear();
+      selectedCountry = null;
+      document.querySelectorAll('.btn-country').forEach(btn => btn.classList.remove('active'));
+      updateSelectedRegionsTags();
+      updateSelectedDeptsTags();
+      updateMapMarkers();
+      renderRegionDropdown('');
+      renderDeptDropdown('');
+      updateStatsDisplay();
+      updateLegend();
+      resetToDefaultView();
+    }
+
+    function updateLegend() {
+      const legendContainer = document.getElementById('legendContainer');
+      const legendItemsDiv = document.getElementById('legendItems');
+      let allRegions = Array.from(regionMapData.keys()).filter(r => r !== "Unspecified Region");
+      allRegions.sort();
+      if (allRegions.length === 0) { legendContainer.style.display = 'none'; return; }
+      legendContainer.style.display = 'block';
+      legendItemsDiv.innerHTML = allRegions.map(region => {
+        const regionColor = getRegionColor(region);
+        const logoUrl = getLogoUrlForRegion(region);
+        const isSelected = selectedRegions.has(region);
+        return `<div class="legend-item ${isSelected ? 'highlight' : ''}" data-region="${region.replace(/"/g, '&quot;')}" onclick="selectRegionFromLegend('${region.replace(/'/g, "\\'")}')">
         <div class="legend-color" style="background-color: ${regionColor};"><img src="${logoUrl}" onerror="this.style.display='none'"></div>
         <span class="legend-label">${region.length > 18 ? region.slice(0, 15) + '…' : region}</span>
       </div>`;
-    }).join('');
-  }
-  
-  window.selectRegionFromLegend = function(regionName) {
-    if (selectedRegions.has(regionName)) selectedRegions.delete(regionName);
-    else selectedRegions.add(regionName);
-    updateSelectedRegionsTags();
-    updateMapMarkers();
-    renderRegionDropdown(document.getElementById('regionSearchInput').value);
-    updateStatsDisplay();
-    zoomToSelectedFilters();
-    updateLegend();
-  };
-  
-  async function loadRegionsGeoJSON() {
-    try {
-      const response = await fetch("FBLS_Countries.geojson");
-      if (!response.ok) throw new Error(`HTTP ${response.status} - GeoJSON not found`);
-      const geojsonData = await response.json();
-      if (geoJsonLayer) map.removeLayer(geoJsonLayer);
-      geoJsonLayer = L.geoJSON(geojsonData, {
-        style: styleRegion,
-        onEachFeature: function(feature, layer) {
-          layer.on({ mouseover: highlightFeature, mouseout: resetHighlight, click: onRegionClick });
-        }
-      }).addTo(map);
-      console.log("✅ Regions layer loaded");
-    } catch (err) { console.warn("⚠️ Could not load FBLS_Countries.geojson", err); }
-  }
-  
-  async function init() {
-    await loadLogoMapping();
-    fetch('FBLS.geojson')
-      .then(res => res.json())
-      .then(data => {
-        allStoresFeatures = data.features || [];
-        console.log("Total stores loaded:", allStoresFeatures.length);
-        buildIndices(allStoresFeatures);
-        updateMapMarkers();
-        renderRegionDropdown('');
-        renderDeptDropdown('');
-        updateStatsDisplay();
-        updateLegend();
-      })
-      .catch(err => console.error("GeoJSON error:", err));
-    await loadRegionsGeoJSON();
-  }
-  
-  document.addEventListener('DOMContentLoaded', init);
-  
-  // Event listeners
-  const regionSearch = document.getElementById('regionSearchInput');
-  const regionMenu = document.getElementById('regionDropdownMenu');
-  const regionContainer = document.getElementById('regionDropdownContainer');
-  regionSearch.addEventListener('focus', () => { renderRegionDropdown(regionSearch.value); regionMenu.classList.add('show'); });
-  regionSearch.addEventListener('input', (e) => { renderRegionDropdown(e.target.value); regionMenu.classList.add('show'); });
-  document.addEventListener('click', (e) => { if (!regionContainer?.contains(e.target)) regionMenu.classList.remove('show'); });
-  
-  const deptSearch = document.getElementById('deptSearchInput');
-  const deptMenu = document.getElementById('deptDropdownMenu');
-  const deptContainer = document.getElementById('deptDropdownContainer');
-  deptSearch.addEventListener('focus', () => { renderDeptDropdown(deptSearch.value); deptMenu.classList.add('show'); });
-  deptSearch.addEventListener('input', (e) => { renderDeptDropdown(e.target.value); deptMenu.classList.add('show'); });
-  document.addEventListener('click', (e) => { if (!deptContainer?.contains(e.target)) deptMenu.classList.remove('show'); });
-  
-  document.getElementById('selectAllBtn').addEventListener('click', selectAllRegions);
-  document.getElementById('selectAllDeptBtn').addEventListener('click', selectAllDepts);
-  document.getElementById('clearRegionBtn').addEventListener('click', clearAll);
-  document.getElementById('resetViewBtn').addEventListener('click', clearAll);
-  document.getElementById('toggleStoresBtn').addEventListener('click', toggleStores);
-  
-  const legendToggleBtn = document.getElementById('legendToggleBtn');
-  let legendExpanded = false;
-  if (legendToggleBtn) {
-    legendToggleBtn.addEventListener('click', () => {
-      const legendItems = document.getElementById('legendItems');
-      if (legendExpanded) {
-        legendItems.style.display = 'none';
-        legendToggleBtn.classList.remove('fa-chevron-down');
-        legendToggleBtn.classList.add('fa-chevron-up');
-      } else {
-        legendItems.style.display = 'flex';
-        legendToggleBtn.classList.remove('fa-chevron-up');
-        legendToggleBtn.classList.add('fa-chevron-down');
-      }
-      legendExpanded = !legendExpanded;
-    });
-  }
-  
-  document.querySelectorAll('.btn-country').forEach(btn => { 
-    btn.addEventListener('click', () => {
-      const countryCode = btn.dataset.country;
-      const lat = btn.dataset.lat;
-      const lng = btn.dataset.lng;
-      const zoom = btn.dataset.zoom;
-      filterByCountry(countryCode, lat, lng, zoom);
+      }).join('');
+    }
+
+    window.selectRegionFromLegend = function (regionName) {
+      if (selectedRegions.has(regionName)) selectedRegions.delete(regionName);
+      else selectedRegions.add(regionName);
+      updateSelectedRegionsTags();
+      updateMapMarkers();
+      renderRegionDropdown(document.getElementById('regionSearchInput').value);
+      updateStatsDisplay();
+      zoomToSelectedFilters();
       updateLegend();
-    }); 
-  });
-</script>
+    };
+
+    async function loadRegionsGeoJSON() {
+      try {
+        const response = await fetch("FBLS_Countries.geojson");
+        if (!response.ok) throw new Error(`HTTP ${response.status} - GeoJSON not found`);
+        const geojsonData = await response.json();
+        if (geoJsonLayer) map.removeLayer(geoJsonLayer);
+        geoJsonLayer = L.geoJSON(geojsonData, {
+          style: styleRegion,
+          onEachFeature: function (feature, layer) {
+            layer.on({ mouseover: highlightFeature, mouseout: resetHighlight, click: onRegionClick });
+          }
+        }).addTo(map);
+        console.log("✅ Regions layer loaded");
+      } catch (err) { console.warn("⚠️ Could not load FBLS_Countries.geojson", err); }
+    }
+
+    async function init() {
+      await loadLogoMapping();
+      fetch('FBLS.geojson')
+        .then(res => res.json())
+        .then(data => {
+          allStoresFeatures = data.features || [];
+          console.log("Total stores loaded:", allStoresFeatures.length);
+          buildIndices(allStoresFeatures);
+          updateMapMarkers();
+          renderRegionDropdown('');
+          renderDeptDropdown('');
+          updateStatsDisplay();
+          updateLegend();
+        })
+        .catch(err => console.error("GeoJSON error:", err));
+      await loadRegionsGeoJSON();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    // Event listeners
+    const regionSearch = document.getElementById('regionSearchInput');
+    const regionMenu = document.getElementById('regionDropdownMenu');
+    const regionContainer = document.getElementById('regionDropdownContainer');
+    regionSearch.addEventListener('focus', () => { renderRegionDropdown(regionSearch.value); regionMenu.classList.add('show'); });
+    regionSearch.addEventListener('input', (e) => { renderRegionDropdown(e.target.value); regionMenu.classList.add('show'); });
+    document.addEventListener('click', (e) => { if (!regionContainer?.contains(e.target)) regionMenu.classList.remove('show'); });
+
+    const deptSearch = document.getElementById('deptSearchInput');
+    const deptMenu = document.getElementById('deptDropdownMenu');
+    const deptContainer = document.getElementById('deptDropdownContainer');
+    deptSearch.addEventListener('focus', () => { renderDeptDropdown(deptSearch.value); deptMenu.classList.add('show'); });
+    deptSearch.addEventListener('input', (e) => { renderDeptDropdown(e.target.value); deptMenu.classList.add('show'); });
+    document.addEventListener('click', (e) => { if (!deptContainer?.contains(e.target)) deptMenu.classList.remove('show'); });
+
+    document.getElementById('selectAllBtn').addEventListener('click', selectAllRegions);
+    document.getElementById('selectAllDeptBtn').addEventListener('click', selectAllDepts);
+    document.getElementById('clearRegionBtn').addEventListener('click', clearAll);
+    document.getElementById('resetViewBtn').addEventListener('click', clearAll);
+    document.getElementById('toggleStoresBtn').addEventListener('click', toggleStores);
+
+    const legendToggleBtn = document.getElementById('legendToggleBtn');
+    let legendExpanded = false;
+    if (legendToggleBtn) {
+      legendToggleBtn.addEventListener('click', () => {
+        const legendItems = document.getElementById('legendItems');
+        if (legendExpanded) {
+          legendItems.style.display = 'none';
+          legendToggleBtn.classList.remove('fa-chevron-down');
+          legendToggleBtn.classList.add('fa-chevron-up');
+        } else {
+          legendItems.style.display = 'flex';
+          legendToggleBtn.classList.remove('fa-chevron-up');
+          legendToggleBtn.classList.add('fa-chevron-down');
+        }
+        legendExpanded = !legendExpanded;
+      });
+    }
+
+    document.querySelectorAll('.btn-country').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const countryCode = btn.dataset.country;
+        const lat = btn.dataset.lat;
+        const lng = btn.dataset.lng;
+        const zoom = btn.dataset.zoom;
+        filterByCountry(countryCode, lat, lng, zoom);
+        updateLegend();
+      });
+    });
+  </script>
 </body>
+
 </html>
